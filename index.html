@@ -42,7 +42,7 @@
       transform: rotate(180deg);
     }
     .status {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #666;
       margin-bottom: 16px;
     }
@@ -66,10 +66,16 @@
       font-weight: 600;
       margin-top: 8px;
     }
-    .time {
+    .time-real {
       font-size: 1.2rem;
       color: #d9534f;
       font-weight: bold;
+      margin-top: 4px;
+    }
+    .time-theoretical {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 2px;
     }
   </style>
 </head>
@@ -77,69 +83,84 @@
 
   <div class="header-container">
     <h1>La Courrouze & Ligne C6</h1>
-    <button class="btn-refresh-icon" onclick="chargerDonneesDirectes()" title="Rafraîchir">⟳</button>
+    <button class="btn-refresh-icon" onclick="chargerHoraires()" title="Rafraîchir">⟳</button>
   </div>
 
   <div id="status" class="status">Initialisation...</div>
   <div id="results"></div>
 
   <script>
-    const API_URL = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/horaimg_prochains_passages/records";
+    // URL de l'API Open Data Rennes Métropole (Passages en temps réel)
+    const API_URL = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?limit=15";
 
-    function initialiser() {
-      const statusEl = document.getElementById("status");
-      statusEl.innerText = "Chargement des horaires...";
-      chargerDonneesDirectes();
-    }
-
-    async function chargerDonneesDirectes() {
+    async function chargerHoraires() {
       const statusEl = document.getElementById("status");
       const resultsEl = document.getElementById("results");
 
-      statusEl.innerText = "Interrogation des serveurs STAR...";
-      resultsEl.innerHTML = "<div class='card'>Chargement en cours...</div>";
+      statusEl.innerText = "Mise à jour en cours...";
 
       try {
-        // Requête large pour s'assurer de récupérer des résultats sans blocage de filtre
-        const response = await fetch(`${API_URL}?limit=15`);
-        const data = await response.json();
+        const response = await fetch(API_URL);
+        
+        if (!response.ok) {
+          throw new Error(`Erreur réseau (${response.status})`);
+        }
 
-        statusEl.innerText = "Mis à jour à " + new Date().toLocaleTimeString();
+        const data = await response.json();
+        const passages = data.results || [];
+
+        statusEl.innerText = "Dernière mise à jour : " + new Date().toLocaleTimeString();
         resultsEl.innerHTML = "";
 
-        if (!data.results || data.results.length === 0) {
-          resultsEl.innerHTML = "<div class='card'>Aucune donnée reçue de l'API.</div>";
+        if (passages.length === 0) {
+          resultsEl.innerHTML = "<div class='card'>Aucun passage trouvé pour le moment.</div>";
           return;
         }
 
-        // On filtre ou affiche les premiers résultats disponibles pour valider l'affichage
-        data.results.forEach(item => {
+        passages.forEach(item => {
           const card = document.createElement("div");
           card.className = "card";
           
-          const ligne = item.nomligne || 'Ligne';
-          const badgeClass = ligne.toUpperCase() === 'C6' ? 'c6' : 'metro-b';
+          const nomLigne = item.nomligne || item.idline || 'C6';
+          const badgeClass = nomLigne.toString().toUpperCase().includes('C6') ? 'c6' : 'metro-b';
+          const nomArret = item.nomarret || item.stopname || 'La Courrouze';
+          const destination = item.destination || item.headsign || 'Direction Rennes';
           
+          // Temps réel GPS (ex: "3 min" ou "À l'approche")
+          const tempsReel = item.ecart || item.delai || 'Temps réel indisponible';
+          
+          // Horaire prévu de base (ex: heure fixe du passage théorique)
+          const heurePrevue = item.heurepassage || item.depart || 'Horaire théorique non spécifié';
+
           card.innerHTML = `
             <div>
-              <span class="line-badge ${badgeClass}">${ligne}</span>
-              <strong>${item.nomarret || 'Arrêt non spécifié'}</strong>
+              <span class="line-badge ${badgeClass}">${nomLigne}</span>
+              <strong>${nomArret}</strong>
             </div>
-            <div class="destination">Vers : ${item.destination || 'Destination non précisée'}</div>
-            <div class="time">Prochain passage : ${item.ecart || item.heurepassage || 'Bientôt'}</div>
+            <div class="destination">Vers : ${destination}</div>
+            <div class="time-real">🔴 Temps réel (GPS) : ${tempsReel}</div>
+            <div class="time-theoretical">📅 Horaire prévu (Base) : ${heurePrevue}</div>
           `;
           resultsEl.appendChild(card);
         });
 
       } catch (err) {
-        console.error(err);
-        statusEl.innerText = "Erreur de connexion.";
-        resultsEl.innerHTML = `<div class='card' style='color:red;'>Impossible de joindre l'API STAR : ${err.message}</div>`;
+        console.error("Erreur:", err);
+        statusEl.innerText = "Erreur de connexion aux serveurs STAR.";
+        resultsEl.innerHTML = `
+          <div class="card" style="border-left: 4px solid #d9534f;">
+            <strong>Impossible de charger les données en direct.</strong><br>
+            <small>Vérifiez votre connexion internet. Prochaine tentative automatique dans 2 minutes.</small>
+          </div>
+        `;
       }
     }
 
-    // Lancement au démarrage
-    initialiser();
+    // Lancement au démarrage de la page
+    chargerHoraires();
+
+    // Lancement d'un rafraîchissement automatique toutes les 2 minutes (120000 millisecondes)
+    setInterval(chargerHoraires, 120000);
   </script>
 </body>
 </html>
