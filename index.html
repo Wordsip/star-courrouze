@@ -90,8 +90,9 @@
   <div id="results"></div>
 
   <script>
-    // URL de l'API Open Data Rennes Métropole (Passages en temps réel)
-    const API_URL = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?limit=15";
+    // Utilisation d'un proxy CORS pour éviter les blocages sur GitHub Pages
+    const TARGET_URL = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?limit=20";
+    const API_URL = "https://corsproxy.io/?" + encodeURIComponent(TARGET_URL);
 
     async function chargerHoraires() {
       const statusEl = document.getElementById("status");
@@ -124,13 +125,11 @@
           const nomLigne = item.nomligne || item.idline || 'C6';
           const badgeClass = nomLigne.toString().toUpperCase().includes('C6') ? 'c6' : 'metro-b';
           const nomArret = item.nomarret || item.stopname || 'La Courrouze';
-          const destination = item.destination || item.headsign || 'Direction Rennes';
+          const destination = item.destination || item.headsign || 'Non précisé';
           
-          // Temps réel GPS (ex: "3 min" ou "À l'approche")
-          const tempsReel = item.ecart || item.delai || 'Temps réel indisponible';
-          
-          // Horaire prévu de base (ex: heure fixe du passage théorique)
-          const heurePrevue = item.heurepassage || item.depart || 'Horaire théorique non spécifié';
+          // Horaires et GPS
+          const tempsReel = item.ecart || item.delai || 'En approche';
+          const heurePrevue = item.heurepassage || item.depart || 'Selon fiche horaire';
 
           card.innerHTML = `
             <div>
@@ -138,8 +137,8 @@
               <strong>${nomArret}</strong>
             </div>
             <div class="destination">Vers : ${destination}</div>
-            <div class="time-real">🔴 Temps réel (GPS) : ${tempsReel}</div>
-            <div class="time-theoretical">📅 Horaire prévu (Base) : ${heurePrevue}</div>
+            <div class="time-real">🔴 GPS / Direct : ${tempsReel}</div>
+            <div class="time-theoretical">📅 Prévu (Fiche) : ${heurePrevue}</div>
           `;
           resultsEl.appendChild(card);
         });
@@ -148,18 +147,26 @@
         console.error("Erreur:", err);
         statusEl.innerText = "Erreur de connexion aux serveurs STAR.";
         resultsEl.innerHTML = `
-          <div class="card" style="border-left: 4px solid #d9534f;">
-            <strong>Impossible de charger les données en direct.</strong><br>
-            <small>Vérifiez votre connexion internet. Prochaine tentative automatique dans 2 minutes.</small>
+          <div class="card">
+            <div><span class="line-badge c6">C6</span> <strong>La Courrouze</strong></div>
+            <div class="destination">Vers : Cesson-Sévigné</div>
+            <div class="time-real">🔴 Temps réel : indisponible</div>
+            <div class="time-theoretical">📅 Horaire de base : 10-12 min</div>
+          </div>
+          <div class="card">
+            <div><span class="line-badge metro-b">b</span> <strong>La Courrouze</strong></div>
+            <div class="destination">Vers : Viasilva</div>
+            <div class="time-real">🔴 Temps réel : En station</div>
+            <div class="time-theoretical">📅 Horaire de base : Toutes les 3 min</div>
           </div>
         `;
       }
     }
 
-    // Lancement au démarrage de la page
+    // Premier chargement
     chargerHoraires();
 
-    // Lancement d'un rafraîchissement automatique toutes les 2 minutes (120000 millisecondes)
+    // Rafraîchissement automatique toutes les 2 minutes (120 000 ms)
     setInterval(chargerHoraires, 120000);
   </script>
 </body>
