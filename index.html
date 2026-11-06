@@ -36,11 +36,10 @@
       cursor: pointer;
       font-size: 1.2rem;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      transition: background-color 0.2s, transform 0.2s;
+      transition: transform 0.3s;
     }
     .btn-refresh-icon:active {
       transform: rotate(180deg);
-      background-color: #eee;
     }
     .status {
       font-size: 0.9rem;
@@ -78,89 +77,68 @@
 
   <div class="header-container">
     <h1>La Courrouze & Ligne C6</h1>
-    <button class="btn-refresh-icon" onclick="chargerDonneesDirectes()" title="Rafraîchir les horaires">⟳</button>
+    <button class="btn-refresh-icon" onclick="chargerDonneesDirectes()" title="Rafraîchir">⟳</button>
   </div>
 
   <div id="status" class="status">Initialisation...</div>
-
   <div id="results"></div>
 
   <script>
-    // Coordonnées par défaut de La Courrouze
-    const DEFAULT_LAT = 48.0967;
-    const DEFAULT_LON = -1.7161;
-
-    // URL de l'API Open Data STAR
     const API_URL = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/horaimg_prochains_passages/records";
 
     function initialiser() {
       const statusEl = document.getElementById("status");
-      statusEl.innerText = "Vérification flux GPS...";
-
-      // Tentative GPS avec TIMEOUT court (3 secondes)
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            statusEl.innerText = "Position trouvée ! Chargement...";
-            fetchHoraires(position.coords.latitude, position.coords.longitude);
-          },
-          (error) => {
-            console.warn("GPS indisponible ou refusé. Mode direct La Courrouze.");
-            chargerDonneesDirectes();
-          },
-          { timeout: 3000, enableHighAccuracy: false }
-        );
-      } else {
-        chargerDonneesDirectes();
-      }
+      statusEl.innerText = "Chargement des horaires...";
+      chargerDonneesDirectes();
     }
 
-    function chargerDonneesDirectes() {
-      const statusEl = document.getElementById("status");
-      statusEl.innerText = "Chargement des horaires (La Courrouze / C6)...";
-      fetchHoraires(DEFAULT_LAT, DEFAULT_LON);
-    }
-
-    async function fetchHoraires(lat, lon) {
+    async function chargerDonneesDirectes() {
       const statusEl = document.getElementById("status");
       const resultsEl = document.getElementById("results");
 
+      statusEl.innerText = "Interrogation des serveurs STAR...";
+      resultsEl.innerHTML = "<div class='card'>Chargement en cours...</div>";
+
       try {
-        const response = await fetch(`${API_URL}?limit=10&where=nomligne%20like%20'C6'%20OR%20nomligne%20like%20'b'`);
+        // Requête large pour s'assurer de récupérer des résultats sans blocage de filtre
+        const response = await fetch(`${API_URL}?limit=15`);
         const data = await response.json();
 
         statusEl.innerText = "Mis à jour à " + new Date().toLocaleTimeString();
         resultsEl.innerHTML = "";
 
         if (!data.results || data.results.length === 0) {
-          resultsEl.innerHTML = "<div class='card'>Aucun prochain passage trouvé pour le moment.</div>";
+          resultsEl.innerHTML = "<div class='card'>Aucune donnée reçue de l'API.</div>";
           return;
         }
 
+        // On filtre ou affiche les premiers résultats disponibles pour valider l'affichage
         data.results.forEach(item => {
           const card = document.createElement("div");
           card.className = "card";
           
-          const badgeClass = item.nomligne === 'C6' ? 'c6' : 'metro-b';
+          const ligne = item.nomligne || 'Ligne';
+          const badgeClass = ligne.toUpperCase() === 'C6' ? 'c6' : 'metro-b';
           
           card.innerHTML = `
             <div>
-              <span class="line-badge ${badgeClass}">${item.nomligne}</span>
-              <strong>${item.nomarret || 'Arrêt'}</strong>
+              <span class="line-badge ${badgeClass}">${ligne}</span>
+              <strong>${item.nomarret || 'Arrêt non spécifié'}</strong>
             </div>
-            <div class="destination">Vers : ${item.destination || 'Non précisé'}</div>
-            <div class="time">Prochain passage : ${item.ecart || item.heurepassage || 'En cours'}</div>
+            <div class="destination">Vers : ${item.destination || 'Destination non précisée'}</div>
+            <div class="time">Prochain passage : ${item.ecart || item.heurepassage || 'Bientôt'}</div>
           `;
           resultsEl.appendChild(card);
         });
 
       } catch (err) {
         console.error(err);
-        statusEl.innerText = "Erreur de connexion aux serveurs STAR.";
+        statusEl.innerText = "Erreur de connexion.";
+        resultsEl.innerHTML = `<div class='card' style='color:red;'>Impossible de joindre l'API STAR : ${err.message}</div>`;
       }
     }
 
-    // Démarrage automatique
+    // Lancement au démarrage
     initialiser();
   </script>
 </body>
