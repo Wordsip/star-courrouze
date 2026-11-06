@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STAR - Bus C6 & Métro B</title>
+  <title>STAR - La Courrouze & C6</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -19,11 +19,7 @@
       align-items: center;
       margin-bottom: 12px;
     }
-    h1 {
-      font-size: 1.3rem;
-      color: #111;
-      margin: 0;
-    }
+    h1 { font-size: 1.3rem; color: #111; margin: 0; }
     .btn-refresh-icon {
       background: #fff;
       border: 1px solid #ddd;
@@ -36,18 +32,10 @@
       cursor: pointer;
       font-size: 1.2rem;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      transition: transform 0.3s;
     }
-    .btn-refresh-icon:active {
-      transform: rotate(180deg);
-    }
-    .nav-tabs {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 16px;
-    }
+    .btn-refresh-icon:active { transform: rotate(180deg); }
+    .status { font-size: 0.8rem; color: #666; margin-bottom: 12px; }
+    .nav-tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 16px; }
     .tab-btn {
       background: #e4e4ed;
       border: none;
@@ -56,24 +44,11 @@
       font-size: 0.85rem;
       font-weight: 600;
       cursor: pointer;
-      white-space: nowrap;
       color: #444;
     }
-    .tab-btn.active {
-      background: #0066cc;
-      color: white;
-    }
-    .status {
-      font-size: 0.8rem;
-      color: #666;
-      margin-bottom: 12px;
-    }
-    .tab-content {
-      display: none;
-    }
-    .tab-content.active {
-      display: block;
-    }
+    .tab-btn.active { background: #0066cc; color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
     .card {
       background: #fff;
       border-radius: 12px;
@@ -81,51 +56,15 @@
       margin-bottom: 14px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .line-badge {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-weight: bold;
-      color: #fff;
-      font-size: 0.85rem;
-    }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .line-badge { padding: 3px 8px; border-radius: 4px; font-weight: bold; color: #fff; font-size: 0.85rem; }
     .c6 { background-color: #008060; }
     .metro-b { background-color: #ab66a6; }
-    
-    .mode-tag {
-      font-size: 0.72rem;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-weight: bold;
-    }
-    .mode-real {
-      background-color: #fde8e8;
-      color: #c53030;
-    }
-    .mode-theo {
-      background-color: #edf2f7;
-      color: #4a5568;
-    }
-
-    .route-info {
-      font-weight: 600;
-      margin-bottom: 10px;
-      font-size: 0.9rem;
-      color: #444;
-    }
-
-    /* Layout carré multi-passage sur la même ligne */
-    .square-row {
-      display: flex;
-      gap: 10px;
-      justify-content: space-between;
-    }
+    .mode-tag { font-size: 0.72rem; padding: 3px 8px; border-radius: 12px; font-weight: bold; }
+    .mode-real { background-color: #fde8e8; color: #c53030; }
+    .mode-theo { background-color: #edf2f7; color: #4a5568; }
+    .route-info { font-weight: 600; margin-bottom: 10px; font-size: 0.9rem; color: #444; }
+    .square-row { display: flex; gap: 10px; justify-content: space-between; }
     .square-box {
       flex: 1;
       aspect-ratio: 1 / 1;
@@ -139,70 +78,24 @@
       text-align: center;
       padding: 4px;
     }
-    .square-box.first-bus {
-      background: #ebf8ff;
-      border-color: #3182ce;
-    }
-    .square-num {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      font-weight: 700;
-      color: #718096;
-      margin-bottom: 2px;
-    }
-    .square-box.first-bus .square-num {
-      color: #2b6cb0;
-    }
-    .square-time {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: #e53e3e;
-    }
-    .square-box.first-bus .square-time {
-      color: #2b6cb0;
-    }
-
-    .alert-card {
-      background: #fff3cd;
-      border-left: 4px solid #ffc107;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      font-size: 0.9rem;
-    }
-    .sms-box {
-      background: #e9ecef;
-      padding: 12px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-    .sms-btn {
-      background: #28a745;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 0.85rem;
-      white-space: nowrap;
-    }
+    .square-box.first-bus { background: #ebf8ff; border-color: #3182ce; }
+    .square-num { font-size: 0.7rem; font-weight: 700; color: #718096; }
+    .square-time { font-size: 1.2rem; font-weight: 800; color: #e53e3e; }
+    .square-box.first-bus .square-time { color: #2b6cb0; }
+    .alert-card { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 0.9rem; }
+    .sms-box { background: #e9ecef; padding: 12px; border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+    .sms-btn { background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; }
   </style>
 </head>
 <body>
 
   <div class="header-container">
     <h1>Bus C6 & Métro B</h1>
-    <button class="btn-refresh-icon" onclick="rafraichirHoraires()" title="Rafraîchir">⟳</button>
+    <button class="btn-refresh-icon" onclick="chargerVraiesDonneesSTAR()" title="Rafraîchir">⟳</button>
   </div>
 
-  <div id="status" class="status">Initialisation...</div>
+  <div id="status" class="status">Connexion à la STAR en direct...</div>
 
-  <!-- Barre d'onglets (Vue consolidée par défaut) -->
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="changerOnglet('tous', event)">📋 Tous les trajets</button>
     <button class="tab-btn" onclick="changerOnglet('traffic', event)">⚠️ Trafic</button>
@@ -210,51 +103,33 @@
     <button class="tab-btn" onclick="changerOnglet('suivi', event)">📍 Statut</button>
   </div>
 
-  <!-- ONGLET UNIQUE : TOUS LES TRAJETS -->
+  <!-- VUE UNIQUE CONSOLIDÉE -->
   <div id="tab-tous" class="tab-content active">
     <h3 style="margin: 5px 0 10px 0; font-size: 1rem; color: #555;">Bus C6</h3>
     
     <div class="card">
       <div class="card-header">
         <div><span class="line-badge c6">C6</span> <strong>Cœur de Courrouze</strong></div>
-        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
+        <span class="mode-tag mode-real" id="badge-c6-1">🔴 Temps Réel STAR</span>
       </div>
       <div class="route-info">Vers : Cité Judiciaire</div>
       <div class="square-row">
-        <div class="square-box first-bus">
-          <div class="square-num">1er passage</div>
-          <div class="square-time" id="t1-c6-1">--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">2e passage</div>
-          <div class="square-time" id="t2-c6-1">--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">3e passage</div>
-          <div class="square-time" id="t3-c6-1">--</div>
-        </div>
+        <div class="square-box first-bus"><div class="square-num">1er passage</div><div class="square-time" id="t1-c6-1">--</div></div>
+        <div class="square-box"><div class="square-num">2e passage</div><div class="square-time" id="t2-c6-1">--</div></div>
+        <div class="square-box"><div class="square-num">3e passage</div><div class="square-time" id="t3-c6-1">--</div></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <div><span class="line-badge c6">C6</span> <strong>Cité Judiciaire</strong></div>
-        <span class="mode-tag mode-theo">📅 Horaire Prédéfini</span>
+        <span class="mode-tag mode-real" id="badge-c6-2">🔴 Temps Réel STAR</span>
       </div>
-      <div class="route-info">Vers : Cœur de Courrouze (Retour)</div>
+      <div class="route-info">Vers : Cœur de Courrouze</div>
       <div class="square-row">
-        <div class="square-box first-bus">
-          <div class="square-num">1er passage</div>
-          <div class="square-time" id="t1-c6-2">--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">2e passage</div>
-          <div class="square-time" id="t2-c6-2">--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">3e passage</div>
-          <div class="square-time" id="t3-c6-2">--</div>
-        </div>
+        <div class="square-box first-bus"><div class="square-num">1er passage</div><div class="square-time" id="t1-c6-2">--</div></div>
+        <div class="square-box"><div class="square-num">2e passage</div><div class="square-time" id="t2-c6-2">--</div></div>
+        <div class="square-box"><div class="square-num">3e passage</div><div class="square-time" id="t3-c6-2">--</div></div>
       </div>
     </div>
 
@@ -263,89 +138,55 @@
     <div class="card">
       <div class="card-header">
         <div><span class="line-badge metro-b">b</span> <strong>La Courrouze</strong></div>
-        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
+        <span class="mode-tag mode-real" id="badge-m-1">🔴 Temps Réel STAR</span>
       </div>
       <div class="route-info">Vers : Colombier</div>
       <div class="square-row">
-        <div class="square-box first-bus">
-          <div class="square-num">1ère rame</div>
-          <div class="square-time" id="t1-m-1">--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">2e rame</div>
-          <div class="square-time" id="t2-m-1">--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">3e rame</div>
-          <div class="square-time" id="t3-m-1">--</div>
-        </div>
+        <div class="square-box first-bus"><div class="square-num">1ère rame</div><div class="square-time" id="t1-m-1">--</div></div>
+        <div class="square-box"><div class="square-num">2e rame</div><div class="square-time" id="t2-m-1">--</div></div>
+        <div class="square-box"><div class="square-num">3e rame</div><div class="square-time" id="t3-m-1">--</div></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
         <div><span class="line-badge metro-b">b</span> <strong>Colombier</strong></div>
-        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
+        <span class="mode-tag mode-real" id="badge-m-2">🔴 Temps Réel STAR</span>
       </div>
-      <div class="route-info">Vers : La Courrouze (Retour)</div>
+      <div class="route-info">Vers : La Courrouze</div>
       <div class="square-row">
-        <div class="square-box first-bus">
-          <div class="square-num">1ère rame</div>
-          <div class="square-time" id="t1-m-2">--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">2e rame</div>
-          <div class="square-time" id="t2-m-2">--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">3e rame</div>
-          <div class="square-time" id="t3-m-2">--</div>
-        </div>
+        <div class="square-box first-bus"><div class="square-num">1ère rame</div><div class="square-time" id="t1-m-2">--</div></div>
+        <div class="square-box"><div class="square-num">2e rame</div><div class="square-time" id="t2-m-2">--</div></div>
+        <div class="square-box"><div class="square-num">3e rame</div><div class="square-time" id="t3-m-2">--</div></div>
       </div>
     </div>
-
   </div>
 
-  <!-- ONGLET 2 : INFO TRAFIC -->
+  <!-- ONGLET TRAFIC -->
   <div id="tab-traffic" class="tab-content">
-    <div class="alert-card">
-      <strong>ℹ️ Métro B :</strong><br>
-      Stations La Courrouze et Colombier ouvertes. Trafic normal.
-    </div>
-    <div class="alert-card" style="border-left-color: #0066cc; background-color: #e7f0fa;">
-      <strong>ℹ️ Ligne C6 :</strong><br>
-      Circulation habituelle entre Cœur de Courrouze et Cité Judiciaire.
-    </div>
+    <div class="alert-card"><strong>ℹ️ Métro B :</strong> Stations La Courrouze et Colombier ouvertes.</div>
+    <div class="alert-card" style="border-left-color: #0066cc; background-color: #e7f0fa;"><strong>ℹ️ Ligne C6 :</strong> Circulation normale.</div>
   </div>
 
-  <!-- ONGLET 3 : SMS -->
+  <!-- ONGLET SMS -->
   <div id="tab-sms" class="tab-content">
     <div class="card">
-      <h3>Modèles de messages rapides</h3>
-      <div class="sms-box">
-        <span>« Je suis au bus C6 (Cœur de Courrouze → Cité Judiciaire). »</span>
-        <a class="sms-btn" href="sms:?body=Je%20suis%20au%20bus%20C6.">Envoyer</a>
-      </div>
-      <div class="sms-box">
-        <span>« Je suis au métro B (La Courrouze → Colombier). »</span>
-        <a class="sms-btn" href="sms:?body=Je%20suis%20dans%20le%20M%C3%A9tro%20B.">Envoyer</a>
-      </div>
-      <div class="sms-box">
-        <span>« Je suis arrivée ! »</span>
-        <a class="sms-btn" href="sms:?body=Je%20suis%20arriv%C3%A9e%20%21">Envoyer</a>
-      </div>
+      <h3>Modèles de messages</h3>
+      <div class="sms-box"><span>« Je suis au bus C6 »</span><a class="sms-btn" href="sms:?body=Je%20suis%20au%20bus%20C6.">Envoyer</a></div>
+      <div class="sms-box"><span>« Je suis au métro B »</span><a class="sms-btn" href="sms:?body=Je%20suis%20dans%20le%20M%C3%A9tro%20B.">Envoyer</a></div>
+      <div class="sms-box"><span>« Je suis arrivée ! »</span><a class="sms-btn" href="sms:?body=Je%20suis%20arriv%C3%A9e%20%21">Envoyer</a></div>
     </div>
   </div>
 
-  <!-- ONGLET 4 : STATUT -->
+  <!-- ONGLET STATUT -->
   <div id="tab-suivi" class="tab-content">
     <div class="card" style="text-align: center;">
-      <h3>Mon statut actuel</h3>
-      <p id="current-mode" style="font-size: 1.1rem; font-weight: bold; color: #0066cc; margin: 10px 0;">En attente</p>
+      <h3>Mon statut</h3>
+      <p id="current-mode" style="font-size: 1.1rem; font-weight: bold; color: #0066cc;">En attente</p>
       <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px;">
-        <button class="tab-btn" onclick="setMode('🚌 Je suis au bus')">Je suis au bus</button>
-        <button class="tab-btn" onclick="setMode('🚇 Je suis au métro')">Je suis au métro</button>
-        <button class="tab-btn" onclick="setMode('🏠 Je suis arrivée')">Je suis arrivée</button>
+        <button class="tab-btn" onclick="setMode('🚌 En route vers le bus')">Au bus</button>
+        <button class="tab-btn" onclick="setMode('🚇 En route vers le métro')">Au métro</button>
+        <button class="tab-btn" onclick="setMode('🏠 Arrivée !')">Arrivée</button>
       </div>
     </div>
   </div>
@@ -354,53 +195,78 @@
     function changerOnglet(nom, event) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.nav-tabs .tab-btn').forEach(el => el.classList.remove('active'));
-      
       document.getElementById('tab-' + nom).classList.add('active');
-      if (event && event.target) {
-        event.target.classList.add('active');
-      }
+      if (event) event.target.classList.add('active');
     }
 
-    function setMode(modeText) {
-      document.getElementById('current-mode').innerText = modeText;
+    function setMode(t) { document.getElementById('current-mode').innerText = t; }
+
+    // Interrogation directe de l'API OpenData officielle STAR via JSONP (Bypasse CORS Chrome/Firefox/Safari)
+    function chargerVraiesDonneesSTAR() {
+      document.getElementById('status').innerText = "Mise à jour STAR en direct...";
+      
+      const script = document.createElement('script');
+      // API officielle Rennes Métropole des passages en temps réel
+      const urlAPI = "https://data.rennesmetropole.fr/api/records/1.0/search/?dataset=tco-bus-circulation-passages-tr&rows=50&callback=traiterDonneesSTAR";
+      script.src = urlAPI;
+      document.body.appendChild(script);
     }
 
-    // Calcul 100% autonome se fiant uniquement à l'heure du système (iPhone/PC)
-    function rafraichirHoraires() {
+    // Traitement des vraies minutes renvoyées par la STAR
+    function traiterDonneesSTAR(data) {
+      const records = data.records || [];
       const maintenant = new Date();
-      const mins = maintenant.getMinutes();
 
-      // Fréquences réelles de référence STAR
-      const c6_1_m1 = 10 - (mins % 10);
-      const c6_2_m1 = 12 - (mins % 12);
+      let c6_courrouze = [];
+      let c6_judiciaire = [];
+      let metro_courrouze = [];
+      let metro_colombier = [];
 
-      const m_1_m1 = 4 - (mins % 4);
-      const m_2_m1 = 3 - (mins % 3);
+      records.forEach(r => {
+        const fields = r.fields;
+        if (!fields || !fields.heurepassage) return;
 
-      // Injection directe dans la grille en carré (3 passages)
-      document.getElementById('t1-c6-1').innerText = `${c6_1_m1} min`;
-      document.getElementById('t2-c6-1').innerText = `${c6_1_m1 + 10} min`;
-      document.getElementById('t3-c6-1').innerText = `${c6_1_m1 + 20} min`;
+        const ligne = (fields.nomligne || fields.idline || "").toString().toUpperCase();
+        const arret = (fields.nomarret || "").toLowerCase();
+        
+        // Calcul du délai exact en minutes par rapport à l'heure courante
+        const heurePassage = new Date(fields.heurepassage);
+        const diffMins = Math.round((heurePassage - maintenant) / 60000);
 
-      document.getElementById('t1-c6-2').innerText = `${c6_2_m1} min`;
-      document.getElementById('t2-c6-2').innerText = `${c6_2_m1 + 12} min`;
-      document.getElementById('t3-c6-2').innerText = `${c6_2_m1 + 24} min`;
+        if (diffMins >= 0) {
+          if (ligne.includes("C6")) {
+            if (arret.includes("courrouze")) c6_courrouze.push(diffMins);
+            if (arret.includes("judiciaire")) c6_judiciaire.push(diffMins);
+          } else if (ligne === "B" || ligne.includes("METRO")) {
+            if (arret.includes("courrouze")) metro_courrouze.push(diffMins);
+            if (arret.includes("colombier")) metro_colombier.push(diffMins);
+          }
+        }
+      });
 
-      document.getElementById('t1-m-1').innerText = `${m_1_m1} min`;
-      document.getElementById('t2-m-1').innerText = `${m_1_m1 + 4} min`;
-      document.getElementById('t3-m-1').innerText = `${m_1_m1 + 8} min`;
+      // Tri des prochains passages par ordre chronologique
+      c6_courrouze.sort((a,b) => a-b);
+      c6_judiciaire.sort((a,b) => a-b);
+      metro_courrouze.sort((a,b) => a-b);
+      metro_colombier.sort((a,b) => a-b);
 
-      document.getElementById('t1-m-2').innerText = `${m_2_m1} min`;
-      document.getElementById('t2-m-2').innerText = `${m_2_m1 + 3} min`;
-      document.getElementById('t3-m-2').innerText = `${m_2_m1 + 6} min`;
+      // Affichage exact dans les carrés
+      afficherCarrés('t1-c6-1', 't2-c6-1', 't3-c6-1', c6_courrouze);
+      afficherCarrés('t1-c6-2', 't2-c6-2', 't3-c6-2', c6_judiciaire);
+      afficherCarrés('t1-m-1', 't2-m-1', 't3-m-1', metro_courrouze);
+      afficherCarrés('t1-m-2', 't2-m-2', 't3-m-2', metro_colombier);
 
-      document.getElementById('status').innerText = "Actualisé à " + maintenant.toLocaleTimeString();
+      document.getElementById('status').innerText = "Données STAR officielles de " + maintenant.toLocaleTimeString();
     }
 
-    // Déclenchement automatique 1 fois au démarrage pour que tout soit affiché dès l'ouverture
-    window.onload = function() {
-      rafraichirHoraires();
-    };
+    function afficherCarrés(id1, id2, id3, listeTemps) {
+      document.getElementById(id1).innerText = listeTemps[0] !== undefined ? `${listeTemps[0]} min` : "--";
+      document.getElementById(id2).innerText = listeTemps[1] !== undefined ? `${listeTemps[1]} min` : "--";
+      document.getElementById(id3).innerText = listeTemps[2] !== undefined ? `${listeTemps[2]} min` : "--";
+    }
+
+    // Lancement au chargement de la page
+    window.onload = chargerVraiesDonneesSTAR;
   </script>
 </body>
 </html>
