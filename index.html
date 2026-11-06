@@ -2,558 +2,312 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>STAR Direct - La Courrouze</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAR Courrouze - Métro B & Bus C6</title>
     <style>
         :root {
-            --primary: #00818A;
-            --metro-b: #78be20;
-            --chronocar: #00A3E0;
-            --bg: #F4F6F8;
-            --card-bg: #FFFFFF;
-            --text: #1F2937;
-            --alert-bg: #FEE2E2;
-            --alert-text: #991B1B;
-            --alert-border: #EF4444;
-            --nav-bg: #FFFFFF;
-            --nav-border: #D1D5DB;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg);
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --accent-c6: #008855;
+            --accent-b: #6b2d84;
+            --alert-bg: #fff3cd;
+            --alert-border: #ffeeba;
+            --alert-text: #856404;
+            --border-radius: 12px;
         }
 
         body {
-            color: var(--text);
-            padding: 16px 16px 120px 16px; /* Grande marge en bas pour ne jamais cacher le contenu */
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%;
             max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
         header {
             text-align: center;
-            margin-bottom: 16px;
+            padding: 12px 0;
         }
 
-        h1 {
+        header h1 {
+            margin: 0;
             font-size: 1.5rem;
-            color: var(--primary);
-            margin-bottom: 4px;
+            color: #333;
         }
 
-        .subtitle {
-            font-size: 0.85rem;
-            color: #6B7280;
-        }
-
-        /* Banner d'alerte rapide */
-        .alert-banner {
-            background-color: var(--alert-bg);
-            color: var(--alert-text);
-            padding: 12px 14px;
-            border-radius: 12px;
-            margin-bottom: 16px;
-            font-size: 0.85rem;
-            border-left: 4px solid var(--alert-border);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            box-shadow: 0 2px 6px rgba(239, 68, 68, 0.15);
-            cursor: pointer;
-        }
-
-        .alert-banner-content {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .alert-badge-count {
-            background: #991B1B;
-            color: white;
-            font-size: 0.7rem;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 10px;
-            white-space: nowrap;
-        }
-
-        /* Mode Selector (Collège / Maison) */
-        .mode-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 16px;
-        }
-
-        .mode-btn {
-            padding: 12px 8px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            border: 2px solid #E5E7EB;
-            border-radius: 12px;
-            background: var(--card-bg);
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            color: var(--text);
-        }
-
-        .mode-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(0, 129, 138, 0.3);
-        }
-
-        /* Card styles */
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border-left: 6px solid #ccc;
-        }
-
-        .card.metro-b { border-left-color: var(--metro-b); }
-        .card.c6 { border-left-color: var(--chronocar); }
-
-        .line-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .line-badge {
-            font-weight: bold;
-            font-size: 1.1rem;
-            padding: 4px 10px;
-            border-radius: 6px;
-            color: white;
-        }
-
-        .badge-b { background-color: var(--metro-b); }
-        .badge-c6 { background-color: var(--chronocar); }
-
-        .line-direction {
-            font-size: 0.85rem;
-            color: #4B5563;
-            font-weight: 500;
-        }
-
-        .next-departures {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-        }
-
-        .time-chip {
-            background: #F3F4F6;
-            padding: 10px 4px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.05rem;
-            text-align: center;
-        }
-
-        .time-chip.first {
-            background: #E0F2FE;
-            color: #0369A1;
-            border: 1px solid #BAE6FD;
-        }
-
-        .time-chip span {
-            display: block;
-            font-size: 0.7rem;
-            font-weight: normal;
-            color: #6B7280;
-            margin-top: 2px;
-        }
-
-        /* Status & Alert Cards */
-        .traffic-card {
-            background: var(--card-bg);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-            border: 1px solid #E5E7EB;
-        }
-
-        .traffic-card.alert {
-            border-left: 5px solid #EF4444;
-        }
-
-        .traffic-card.normal {
-            border-left: 5px solid #10B981;
-        }
-
-        .traffic-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 6px;
-        }
-
-        .traffic-title {
-            font-weight: bold;
-            font-size: 0.95rem;
-        }
-
-        .traffic-desc {
-            font-size: 0.85rem;
-            color: #4B5563;
-            line-height: 1.4;
+        header div {
+            font-size: 0.9rem;
+            color: #666;
             margin-top: 4px;
         }
 
-        .traffic-impact {
-            display: inline-block;
-            margin-top: 8px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            padding: 3px 8px;
-            border-radius: 6px;
-            background: #FEE2E2;
-            color: #991B1B;
+        .alert-banner {
+            background-color: var(--alert-bg);
+            border: 1px solid var(--alert-border);
+            color: var(--alert-text);
+            padding: 12px;
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
         }
 
-        .sms-section {
-            margin-top: 20px;
-            margin-bottom: 16px;
-        }
-
-        .sms-btn {
-            display: block;
-            width: 100%;
-            background-color: #10B981;
-            color: white;
-            text-align: center;
-            padding: 14px;
-            border-radius: 12px;
-            font-weight: bold;
-            text-decoration: none;
+        .alert-banner h3 {
+            margin: 0 0 6px 0;
             font-size: 1rem;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .status-note {
+        .line-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .line-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .badge-c6 { background-color: var(--accent-c6); }
+        .badge-b { background-color: var(--accent-b); }
+
+        .departures-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .departure-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .departure-item:last-child {
+            border-bottom: none;
+        }
+
+        .real-time {
+            color: #28a745;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .no-bus-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
             text-align: center;
-            font-size: 0.75rem;
-            color: #9CA3AF;
+            margin-top: 8px;
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
             margin-top: 12px;
         }
 
-        /* BARRE DE NAVIGATION FIXÉE TOUT EN BAS */
-        nav.bottom-nav {
-            position: fixed !important;
-            bottom: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100% !important;
-            height: 70px !important;
-            background-color: #FFFFFF !important;
-            border-top: 2px solid #D1D5DB !important;
-            display: flex !important;
-            justify-content: space-around !important;
-            align-items: center !important;
-            z-index: 999999 !important;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.15) !important;
-        }
-
-        .nav-item {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            background: none;
-            border: none;
-            color: #6B7280;
-            font-size: 0.8rem;
-            font-weight: bold;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-            background-color: #F3F4F6;
-        }
-
-        .nav-icon {
-            font-size: 1.4rem;
-            line-height: 1;
-        }
-
-        .nav-badge-dot {
-            position: absolute;
-            top: 8px;
-            right: 28%;
-            width: 8px;
-            height: 8px;
-            background-color: #EF4444;
-            border-radius: 50%;
-            border: 2px solid white;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
+        .btn {
             display: block;
+            text-align: center;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .btn-warning {
+            background: #dc3545;
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 16px;
         }
     </style>
 </head>
 <body>
 
+<div class="app-container">
     <header>
         <h1>STAR Courrouze</h1>
-        <div class="subtitle">Trajets & Perturbations : Métro B & Bus C6</div>
+        <div>Temps réels &amp; Perturbations (GPS STAR)</div>
     </header>
 
-    <!-- Bandeau d'Alerte Trafic rapide -->
-    <div id="alertBanner" class="alert-banner" onclick="switchTab('traffic')">
-        <div class="alert-banner-content">
-            <span>⚠️</span>
-            <span id="alertText">Manifestation & Déviations : Métro B et Bus C6 impactés.</span>
+    <!-- Zone des alertes globales -->
+    <div id="alerts-container"></div>
+
+    <!-- Carte Métro B -->
+    <div class="line-card">
+        <div class="line-header">
+            <span class="badge badge-b">Métro B</span>
+            <span id="metro-status">En service</span>
         </div>
-        <span class="alert-badge-count">2 alertes</span>
+        <ul class="departures-list" id="metro-departures">
+            <li class="departure-item">Chargement des prochains passages...</li>
+        </ul>
     </div>
 
-    <!-- ================= TAB 1 : HORAIRES & TRAJETS ================= -->
-    <div id="tab-horaires" class="tab-content active">
-        <!-- Sélecteur de trajet -->
-        <div class="mode-selector">
-            <button id="btnCollege" class="mode-btn active" onclick="setMode('college')">🏫 Vers Collège</button>
-            <button id="btnMaison" class="mode-btn" onclick="setMode('maison')">🏠 Vers Maison</button>
+    <!-- Carte Bus C6 -->
+    <div class="line-card">
+        <div class="line-header">
+            <span class="badge badge-c6">Bus C6</span>
+            <span id="c6-status">Vérification du flux GPS...</span>
         </div>
-
-        <!-- Cartes des horaires -->
-        <div id="schedulesContainer"></div>
-
-        <!-- Bouton SMS direct aux parents -->
-        <div class="sms-section">
-            <a id="smsButton" href="sms:?body=Je%20suis%20en%20route" class="sms-btn">📱 Je suis en route !</a>
-        </div>
-    </div>
-
-    <!-- ================= TAB 2 : INFO TRAFIC DÉTAILLÉ ================= -->
-    <div id="tab-traffic" class="tab-content">
-        <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--primary);">
-            🚨 Perturbations en cours (Manifs & Travaux)
-        </h2>
-
-        <!-- Perturbation Métro B -->
-        <div class="traffic-card alert">
-            <div class="traffic-header">
-                <span class="line-badge badge-b">Métro B</span>
-                <span style="font-size: 0.75rem; color: #DC2626; font-weight: bold;">Fermetures & Manif</span>
-            </div>
-            <div class="traffic-title">Manifestation & Consignes Préfecture</div>
-            <div class="traffic-desc">
-                Stations <strong>Sainte-Anne</strong>, <strong>Gares</strong> et <strong>Colombier</strong> fermées temporairement sur décision préfectorale. Les rames traversent ces stations sans s'arrêter.
-            </div>
-            <div class="traffic-impact">⚠️ Report conseillé vers Saint-Jacques - Gaîté ou Mabilais</div>
-        </div>
-
-        <!-- Perturbation Bus C6 -->
-        <div class="traffic-card alert">
-            <div class="traffic-header">
-                <span class="line-badge badge-c6">Bus C6</span>
-                <span style="font-size: 0.75rem; color: #DC2626; font-weight: bold;">Déviation Centre-Ville</span>
-            </div>
-            <div class="traffic-title">Manifestation Centre-Ville & Travaux Courrouze</div>
-            <div class="traffic-desc">
-                Les bus ne desservent pas le centre-ville (République / Champ de Mars) pendant le passage du cortège. Déviation en place via boulevards extérieurs.<br/>
-                <em>Note Courrouze :</em> Arrêts Cœur de Courrouze / Jules Maniez reportés temporairement.
-            </div>
-            <div class="traffic-impact">⏱ Retards importants et départs supprimés</div>
-        </div>
-
-        <!-- Statut Général -->
-        <div class="traffic-card normal">
-            <div class="traffic-header">
-                <span style="font-weight: bold; font-size: 0.9rem;">Réseau Global STAR Rennes</span>
-                <span style="font-size: 0.75rem; color: #059669; font-weight: bold;">✓ En service</span>
-            </div>
-            <div class="traffic-desc">
-                L'ensemble du réseau bus et métro reste en service avec adaptation des fréquences.
-            </div>
+        <div id="c6-departures-container">
+            <ul class="departures-list" id="c6-departures">
+                <li class="departure-item">Vérification en direct...</li>
+            </ul>
         </div>
     </div>
 
-    <!-- ================= TAB 3 : SMS & CONTACT ================= -->
-    <div id="tab-sms" class="tab-content">
-        <h2 style="font-size: 1.1rem; margin-bottom: 12px; color: var(--primary);">
-            💬 Messages Rapides Parents
-        </h2>
-        <div class="card" style="border-left-color: #10B981;">
-            <p style="font-size: 0.9rem; margin-bottom: 14px; color: #4B5563;">
-                Prévenez vos parents d'un simple clic dès que vous montez dans le bus ou le métro.
-            </p>
-            
-            <a id="smsButtonTab" href="sms:?body=Je%20suis%20en%20route" class="sms-btn" style="margin-bottom: 12px;">
-                📱 Je suis en route !
-            </a>
-
-            <a href="sms:?body=Il%20y%20a%20un%20retard%20sur%20le%20trajet%20STAR." class="sms-btn" style="background-color: #F59E0B; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
-                ⚠️ Prévenir d'un retard
-            </a>
+    <!-- Messages Rapides Parents -->
+    <div class="line-card">
+        <h3>💬 Messages Rapides Parents</h3>
+        <div class="quick-actions">
+            <a href="sms:?body=Je%20suis%20en%20route%20!" class="btn">📱 Je suis en route !</a>
+            <a href="sms:?body=Attention%2C%20le%20bus%20est%20perturb%C3%A9%20ou%20supprim%C3%A9%20!" class="btn btn-warning">⚠️ Prévenir d'un problème de transport</a>
         </div>
     </div>
 
-    <div class="status-note" id="updateTime">
+    <footer id="last-update">
         Mise à jour STAR en direct...
-    </div>
+    </footer>
+</div>
 
-    <!-- ================= BARRE DE NAVIGATION EN BAS (3 MENUS) ================= -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" onclick="switchTab('horaires')" id="nav-horaires">
-            <span class="nav-icon">⏱️</span>
-            <span>Horaires</span>
-        </button>
+<script>
+    // Configuration de l'API Open Data STAR (Rennes Métropole)
+    const STAR_API_URL = "https://data.rennesmetropole.fr/api/records/1.0/search/";
 
-        <button class="nav-item" onclick="switchTab('traffic')" id="nav-traffic">
-            <span class="nav-badge-dot"></span>
-            <span class="nav-icon">🚨</span>
-            <span>Trafic</span>
-        </button>
+    async function fetchStarData() {
+        try {
+            // 1. Récupération des positions GPS réelles des bus de la ligne C6
+            const gpsResponse = await fetch(`${STAR_API_URL}?dataset=pos-bus&q=nomcourtligne:"C6"&rows=50`);
+            const gpsData = await gpsResponse.json();
 
-        <button class="nav-item" onclick="switchTab('sms')" id="nav-sms">
-            <span class="nav-icon">💬</span>
-            <span>SMS Parents</span>
-        </button>
-    </nav>
+            // 2. Récupération des alertes perturbant le réseau
+            const alertResponse = await fetch(`${STAR_API_URL}?dataset=vitaris-signalements-alertes-reseau-star-td&rows=10`);
+            const alertData = await alertResponse.json();
 
-    <script>
-        let currentMode = 'college';
+            updateC6Display(gpsData.records, alertData.records);
+            updateLastRefresh();
+        } catch (error) {
+            console.error("Erreur de récupération des données STAR:", error);
+            // Si la requête échoue, on vérifie la règle d'heure locale (fin de service à 21h si pas de données)
+            fallbackCheck();
+        }
+    }
 
-        const data = {
-            college: {
-                metro: { line: "Métro B", dir: "La Courrouze ➔ Cité Judiciaire", times: ["2 min", "6 min", "10 min"] },
-                bus: { line: "Bus C6", dir: "La Courrouze ➔ Colombier", times: ["4 min", "12 min", "21 min"] },
-                sms: "sms:?body=Coucou! Je suis en route pour le collège, tout va bien.",
-                smsText: "📱 Je suis en route pour le collège !"
-            },
-            maison: {
-                bus: { line: "Bus C6", dir: "Colombier ➔ La Courrouze", times: ["3 min", "15 min", "26 min"] },
-                metro: { line: "Métro B", dir: "Cité Judiciaire ➔ La Courrouze", times: ["1 min", "5 min", "9 min"] },
-                sms: "sms:?body=Coucou! Je rentre de l'école, je suis en route pour la maison.",
-                smsText: "📱 Je suis en route pour la maison !"
-            }
-        };
+    function updateC6Display(busRecords, alertRecords) {
+        const departuresContainer = document.getElementById("c6-departures-container");
+        const statusElement = document.getElementById("c6-status");
+        const alertsContainer = document.getElementById("alerts-container");
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        const now = new Date();
+        const currentHour = now.getHours();
 
-            const targetTab = document.getElementById(`tab-${tabId}`);
-            const targetNav = document.getElementById(`nav-${tabId}`);
+        // Filtrer les bus GPS actifs pour la ligne C6
+        const activeBuses = busRecords ? busRecords.filter(r => r.fields && r.fields.nomcourtligne === 'C6') : [];
 
-            if (targetTab) targetTab.classList.add('active');
-            if (targetNav) targetNav.classList.add('active');
+        // Détecter s'il y a une alerte de perturbation pour le C6
+        const c6Alerts = alertRecords ? alertRecords.filter(a => a.fields && a.fields.titre && a.fields.titre.includes('C6')) : [];
+
+        // Affichage des alertes en haut de page
+        if (c6Alerts.length > 0) {
+            alertsContainer.innerHTML = c6Alerts.map(a => `
+                <div class="alert-banner">
+                    <h3>⚠️ Perturbation C6</h3>
+                    <div>${a.fields.description || a.fields.titre}</div>
+                </div>
+            `).join('');
+        }
+
+        // RÈGLE MÉTIER TEMPS RÉEL :
+        // Si aucun bus GPS n'est détecté OU si l'heure dépasse 21h sans bus actif en circulation
+        if (activeBuses.length === 0 || (currentHour >= 21 && activeBuses.length === 0)) {
+            statusElement.innerText = "Service Terminé / Interrompu";
+            statusElement.style.color = "#dc3545";
             
-            // Fait défiler automatiquement vers le haut de la page lors du changement d'onglet
-            window.scrollTo(0, 0);
+            departuresContainer.innerHTML = `
+                <div class="no-bus-message">
+                    🚫 Aucun bus C6 ne circule actuellement (Fin de service ou déviation).
+                </div>
+            `;
+        } else {
+            statusElement.innerText = "En service (GPS actif)";
+            statusElement.style.color = "#28a745";
+
+            // Calculer / Afficher les bus réellement suivis en GPS
+            let html = '<ul class="departures-list">';
+            activeBuses.slice(0, 3).forEach((bus, index) => {
+                const destination = bus.fields.destination || "Courrouze / Cesson";
+                html += `
+                    <li class="departure-item">
+                        <span>Direction <strong>${destination}</strong></span>
+                        <span class="real-time">📡 Bus en route (GPS)</span>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            departuresContainer.innerHTML = html;
         }
+    }
 
-        function setMode(mode) {
-            currentMode = mode;
-            document.getElementById('btnCollege').classList.toggle('active', mode === 'college');
-            document.getElementById('btnMaison').classList.toggle('active', mode === 'maison');
-            render();
-        }
-
-        function render() {
-            const container = document.getElementById('schedulesContainer');
-            const smsBtn = document.getElementById('smsButton');
-            const smsBtnTab = document.getElementById('smsButtonTab');
-            const current = data[currentMode];
-
-            let html = '';
-
-            if (currentMode === 'college') {
-                html += createCard('metro-b', 'badge-b', current.metro);
-                html += createCard('c6', 'badge-c6', current.bus);
-            } else {
-                html += createCard('c6', 'badge-c6', current.bus);
-                html += createCard('metro-b', 'badge-b', current.metro);
-            }
-
-            container.innerHTML = html;
-            smsBtn.href = current.sms;
-            smsBtn.innerText = current.smsText;
-
-            if (smsBtnTab) {
-                smsBtnTab.href = current.sms;
-                smsBtnTab.innerText = current.smsText;
-            }
-
-            const now = new Date();
-            document.getElementById('updateTime').innerText = `Mise à jour STAR en direct à ${now.getHours()}h${now.getMinutes().toString().padStart(2, '0')}`;
-        }
-
-        function createCard(typeClass, badgeClass, item) {
-            return `
-                <div class="card ${typeClass}">
-                    <div class="line-header">
-                        <span class="line-badge ${badgeClass}">${item.line}</span>
-                        <span class="line-direction">${item.dir}</span>
-                    </div>
-                    <div class="next-departures">
-                        <div class="time-chip first">${item.times[0]} <span>1<sup>er</sup></span></div>
-                        <div class="time-chip">${item.times[1]} <span>2<sup>e</sup></span></div>
-                        <div class="time-chip">${item.times[2]} <span>3<sup>e</sup></span></div>
-                    </div>
+    function fallbackCheck() {
+        const now = new Date();
+        if (now.getHours() >= 21) {
+            document.getElementById("c6-status").innerText = "Service Terminé";
+            document.getElementById("c6-departures-container").innerHTML = `
+                <div class="no-bus-message">
+                    🚫 Aucun bus C6 disponible après 21h.
                 </div>
             `;
         }
+    }
 
-        async function fetchStarAlerts() {
-            const alertText = document.getElementById('alertText');
-            
-            try {
-                const response = await fetch('https://data.explore.star.fr/api/records/1.0/search/?dataset=vitarme-prochaines-perturbations&rows=3');
-                if (response.ok) {
-                    const resData = await response.json();
-                    if (resData.records && resData.records.length > 0) {
-                        const mainAlert = resData.records[0].fields.titre || "Manifestations & perturbations sur Métro B / Bus C6.";
-                        alertText.innerText = mainAlert;
-                        return;
-                    }
-                }
-            } catch (e) {
-                console.log("Mode secours alertes STAR", e);
-            }
-            
-            alertText.innerHTML = "Manifestation & Déviations : Métro B et Bus C6 impactés.";
-        }
+    function updateLastRefresh() {
+        const now = new Date();
+        document.getElementById("last-update").innerText = `Dernière synchronisation GPS : ${now.toLocaleTimeString()}`;
+    }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            render();
-            fetchStarAlerts();
-        });
-        
-        render();
-        fetchStarAlerts();
-    </script>
+    // Lancement et rafraîchissement automatique toutes les 30 secondes
+    fetchStarData();
+    setInterval(fetchStarData, 30000);
+</script>
+
 </body>
 </html>
