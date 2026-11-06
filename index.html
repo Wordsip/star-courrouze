@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STAR - Bus C6 & Métro B (Temps Réel / Théorique)</title>
+  <title>STAR - Bus C6 & Métro B</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -76,16 +76,16 @@
     }
     .card {
       background: #fff;
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 14px;
-      margin-bottom: 10px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-      position: relative;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
     .card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 6px;
     }
     .line-badge {
       display: inline-block;
@@ -98,9 +98,8 @@
     .c6 { background-color: #008060; }
     .metro-b { background-color: #ab66a6; }
     
-    /* Indicateur Temps Réel vs Théorique */
     .mode-tag {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       padding: 3px 8px;
       border-radius: 12px;
       font-weight: bold;
@@ -116,15 +115,53 @@
 
     .route-info {
       font-weight: 600;
-      margin-top: 8px;
-      font-size: 0.95rem;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      color: #444;
     }
-    .time-waiting {
-      font-size: 1.3rem;
-      color: #d9534f;
-      font-weight: bold;
-      margin-top: 6px;
+
+    /* Grille d'horaires en carrés sur une seule ligne */
+    .square-row {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
     }
+    .square-box {
+      flex: 1;
+      aspect-ratio: 1 / 1;
+      background: #f8f9fa;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 4px;
+    }
+    .square-box.first-bus {
+      background: #ebf8ff;
+      border-color: #3182ce;
+    }
+    .square-num {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #718096;
+      margin-bottom: 2px;
+    }
+    .square-box.first-bus .square-num {
+      color: #2b6cb0;
+    }
+    .square-time {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #e53e3e;
+    }
+    .square-box.first-bus .square-time {
+      color: #2b6cb0;
+    }
+
     .alert-card {
       background: #fff3cd;
       border-left: 4px solid #ffc107;
@@ -178,40 +215,97 @@
   <!-- ONGLET 0 : TOUS LES TRAJETS SUR LA MÊME FEUILLE -->
   <div id="tab-tous" class="tab-content active">
     <h3 style="margin: 5px 0 10px 0; font-size: 1rem; color: #555;">Bus C6</h3>
+    
     <div class="card">
       <div class="card-header">
         <div><span class="line-badge c6">C6</span> <strong>Cœur de Courrouze</strong></div>
-        <span class="mode-tag mode-real" id="tag-real-c1">🔴 Temps Réel (GPS)</span>
+        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
       </div>
       <div class="route-info">Vers : Cité Judiciaire</div>
-      <div class="time-waiting" id="t-all-c6-1">⏱️ 7 min</div>
+      <div class="square-row">
+        <div class="square-box first-bus">
+          <div class="square-num">1er passage</div>
+          <div class="square-time" id="t1-c6-1">7 min</div>
+        </div>
+        <div class="square-box">
+          <div class="square-num">2e passage</div>
+          <div class="square-time" id="t2-c6-1">17 min</div>
+        </div>
+        <div class="square-box">
+          <div class="square-num">3e passage</div>
+          <div class="square-time" id="t3-c6-1">27 min</div>
+        </div>
+      </div>
     </div>
+
     <div class="card">
       <div class="card-header">
         <div><span class="line-badge c6">C6</span> <strong>Cité Judiciaire</strong></div>
-        <span class="mode-tag mode-theo" id="tag-theo-c2">📅 Horaire Prédéfini</span>
+        <span class="mode-tag mode-theo">📅 Horaire Prédéfini</span>
       </div>
       <div class="route-info">Vers : Cœur de Courrouze (Retour)</div>
-      <div class="time-waiting" id="t-all-c6-2">⏱️ 10 min</div>
+      <div class="square-row">
+        <div class="square-box first-bus">
+          <div class="square-num">1er passage</div>
+          <div class="square-time" id="t1-c6-2">10 min</div>
+        </div>
+        <div class="square-box">
+          <div class="square-num">2e passage</div>
+          <div class="square-time" id="t2-c6-2">20 min</div>
+        </div>
+        <div class="square-box">
+          <div class="square-num">3e passage</div>
+          <div class="square-time" id="t3-c6-2">31 min</div>
+        </div>
+      </div>
     </div>
 
     <h3 style="margin: 15px 0 10px 0; font-size: 1rem; color: #555;">Métro B</h3>
+
     <div class="card">
       <div class="card-header">
         <div><span class="line-badge metro-b">b</span> <strong>La Courrouze</strong></div>
-        <span class="mode-tag mode-real" id="tag-real-m1">🔴 Temps Réel (GPS)</span>
+        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
       </div>
       <div class="route-info">Vers : Colombier</div>
-      <div class="time-waiting" id="t-all-m-1">⏱️ 3 min</div>
+      <div class="square-row">
+        <div class="square-box first-bus">
+          <div class="square-num">1ère rame</div>
+          <div class="square-time" id="t1-m-1">3 min</div>
+        </div>
+        <div class="square-box">
+          <div class="square-num">2e rame</div>
+          <div class="square-time" id="t2-m-1">7 min</div>
+        </div>
+        <div class="square-box">
+          <div class="square-num">3e rame</div>
+          <div class="square-time" id="t3-m-1">11 min</div>
+        </div>
+      </div>
     </div>
+
     <div class="card">
       <div class="card-header">
         <div><span class="line-badge metro-b">b</span> <strong>Colombier</strong></div>
-        <span class="mode-tag mode-theo" id="tag-theo-m2">📅 Horaire Prédéfini</span>
+        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
       </div>
       <div class="route-info">Vers : La Courrouze (Retour)</div>
-      <div class="time-waiting" id="t-all-m-2">⏱️ 4 min</div>
+      <div class="square-row">
+        <div class="square-box first-bus">
+          <div class="square-num">1ère rame</div>
+          <div class="square-time" id="t1-m-2">4 min</div>
+        </div>
+        <div class="square-box">
+          <div class="square-num">2e rame</div>
+          <div class="square-time" id="t2-m-2">8 min</div>
+        </div>
+        <div class="square-box">
+          <div class="square-num">3e rame</div>
+          <div class="square-time" id="t3-m-2">12 min</div>
+        </div>
+      </div>
     </div>
+
   </div>
 
   <!-- ONGLET 1 : BUS C6 SEUL -->
@@ -222,15 +316,23 @@
         <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
       </div>
       <div class="route-info">Vers : Cité Judiciaire</div>
-      <div class="time-waiting" id="t-c6-1">⏱️ 7 min</div>
+      <div class="square-row">
+        <div class="square-box first-bus"><div class="square-num">1er</div><div class="square-time" id="tb1-c6-1">7 min</div></div>
+        <div class="square-box"><div class="square-num">2e</div><div class="square-time" id="tb2-c6-1">17 min</div></div>
+        <div class="square-box"><div class="square-num">3e</div><div class="square-time" id="tb3-c6-1">27 min</div></div>
+      </div>
     </div>
     <div class="card">
       <div class="card-header">
         <div><span class="line-badge c6">C6</span> <strong>Cité Judiciaire</strong></div>
         <span class="mode-tag mode-theo">📅 Horaire Prédéfini</span>
       </div>
-      <div class="route-info">Vers : Cœur de Courrouze (Retour)</div>
-      <div class="time-waiting" id="t-c6-2">⏱️ 10 min</div>
+      <div class="route-info">Vers : Cœur de Courrouze</div>
+      <div class="square-row">
+        <div class="square-box first-bus"><div class="square-num">1er</div><div class="square-time" id="tb1-c6-2">10 min</div></div>
+        <div class="square-box"><div class="square-num">2e</div><div class="square-time" id="tb2-c6-2">20 min</div></div>
+        <div class="square-box"><div class="square-num">3e</div><div class="square-time" id="tb3-c6-2">31 min</div></div>
+      </div>
     </div>
   </div>
 
@@ -242,15 +344,23 @@
         <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
       </div>
       <div class="route-info">Vers : Colombier</div>
-      <div class="time-waiting" id="t-metro-1">⏱️ 3 min</div>
+      <div class="square-row">
+        <div class="square-box first-bus"><div class="square-num">1er</div><div class="square-time" id="tm1-m-1">3 min</div></div>
+        <div class="square-box"><div class="square-num">2e</div><div class="square-time" id="tm2-m-1">7 min</div></div>
+        <div class="square-box"><div class="square-num">3e</div><div class="square-time" id="tm3-m-1">11 min</div></div>
+      </div>
     </div>
     <div class="card">
       <div class="card-header">
         <div><span class="line-badge metro-b">b</span> <strong>Colombier</strong></div>
-        <span class="mode-tag mode-theo">📅 Horaire Prédéfini</span>
+        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
       </div>
-      <div class="route-info">Vers : La Courrouze (Retour)</div>
-      <div class="time-waiting" id="t-metro-2">⏱️ 4 min</div>
+      <div class="route-info">Vers : La Courrouze</div>
+      <div class="square-row">
+        <div class="square-box first-bus"><div class="square-num">1er</div><div class="square-time" id="tm1-m-2">4 min</div></div>
+        <div class="square-box"><div class="square-num">2e</div><div class="square-time" id="tm2-m-2">8 min</div></div>
+        <div class="square-box"><div class="square-num">3e</div><div class="square-time" id="tm3-m-2">12 min</div></div>
+      </div>
     </div>
   </div>
 
@@ -262,7 +372,7 @@
     </div>
     <div class="alert-card" style="border-left-color: #0066cc; background-color: #e7f0fa;">
       <strong>ℹ️ Ligne C6 :</strong><br>
-      Circulation normale entre Cœur de Courrouze et Cité Judiciaire. Aucun arrêt supprimé ou dévié.
+      Circulation normale entre Cœur de Courrouze et Cité Judiciaire.
     </div>
   </div>
 
@@ -313,28 +423,50 @@
       document.getElementById('current-mode').innerText = modeText;
     }
 
-    let c6_1 = 7;
-    let c6_2 = 10;
-    let m_1 = 3;
-    let m_2 = 4;
+    let c6_1 = [7, 17, 27];
+    let c6_2 = [10, 20, 31];
+    let m_1 = [3, 7, 11];
+    let m_2 = [4, 8, 12];
 
     function rafraichirDonnees() {
-      c6_1 = c6_1 > 2 ? c6_1 - 2 : 8;
-      c6_2 = c6_2 > 2 ? c6_2 - 2 : 11;
-      m_1 = m_1 > 1 ? m_1 - 1 : 3;
-      m_2 = m_2 > 1 ? m_2 - 1 : 4;
+      c6_1 = c6_1.map(v => v > 2 ? v - 2 : v + 8);
+      c6_2 = c6_2.map(v => v > 2 ? v - 2 : v + 9);
+      m_1 = m_1.map(v => v > 2 ? v - 2 : v + 4);
+      m_2 = m_2.map(v => v > 2 ? v - 2 : v + 4);
 
-      // Mise à jour de l'onglet principal "Tous"
-      document.getElementById('t-all-c6-1').innerText = `⏱️ ${c6_1} min`;
-      document.getElementById('t-all-c6-2').innerText = `⏱️ ${c6_2} min`;
-      document.getElementById('t-all-m-1').innerText = `⏱️ ${m_1} min`;
-      document.getElementById('t-all-m-2').innerText = `⏱️ ${m_2} min`;
+      // Mise à jour ONGLET TOUS
+      document.getElementById('t1-c6-1').innerText = `${c6_1[0]} min`;
+      document.getElementById('t2-c6-1').innerText = `${c6_1[1]} min`;
+      document.getElementById('t3-c6-1').innerText = `${c6_1[2]} min`;
 
-      // Mise à jour des onglets séparés Bus et Métro
-      document.getElementById('t-c6-1').innerText = `⏱️ ${c6_1} min`;
-      document.getElementById('t-c6-2').innerText = `⏱️ ${c6_2} min`;
-      document.getElementById('t-metro-1').innerText = `⏱️ ${m_1} min`;
-      document.getElementById('t-metro-2').innerText = `⏱️ ${m_2} min`;
+      document.getElementById('t1-c6-2').innerText = `${c6_2[0]} min`;
+      document.getElementById('t2-c6-2').innerText = `${c6_2[1]} min`;
+      document.getElementById('t3-c6-2').innerText = `${c6_2[2]} min`;
+
+      document.getElementById('t1-m-1').innerText = `${m_1[0]} min`;
+      document.getElementById('t2-m-1').innerText = `${m_1[1]} min`;
+      document.getElementById('t3-m-1').innerText = `${m_1[2]} min`;
+
+      document.getElementById('t1-m-2').innerText = `${m_2[0]} min`;
+      document.getElementById('t2-m-2').innerText = `${m_2[1]} min`;
+      document.getElementById('t3-m-2').innerText = `${m_2[2]} min`;
+
+      // Mise à jour ONGLETS SÉPARÉS
+      document.getElementById('tb1-c6-1').innerText = `${c6_1[0]} min`;
+      document.getElementById('tb2-c6-1').innerText = `${c6_1[1]} min`;
+      document.getElementById('tb3-c6-1').innerText = `${c6_1[2]} min`;
+
+      document.getElementById('tb1-c6-2').innerText = `${c6_2[0]} min`;
+      document.getElementById('tb2-c6-2').innerText = `${c6_2[1]} min`;
+      document.getElementById('tb3-c6-2').innerText = `${c6_2[2]} min`;
+
+      document.getElementById('tm1-m-1').innerText = `${m_1[0]} min`;
+      document.getElementById('tm2-m-1').innerText = `${m_1[1]} min`;
+      document.getElementById('tm3-m-1').innerText = `${m_1[2]} min`;
+
+      document.getElementById('tm1-m-2').innerText = `${m_2[0]} min`;
+      document.getElementById('tm2-m-2').innerText = `${m_2[1]} min`;
+      document.getElementById('tm3-m-2').innerText = `${m_2[2]} min`;
 
       document.getElementById('status').innerText = "Synchronisé - " + new Date().toLocaleTimeString();
     }
