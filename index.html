@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STAR - La Courrouze & C6</title>
+  <title>STAR - Bus C6 & Métro B (Temps Réel / Théorique)</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -80,6 +80,12 @@
       padding: 14px;
       margin-bottom: 10px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      position: relative;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .line-badge {
       display: inline-block;
@@ -91,9 +97,26 @@
     }
     .c6 { background-color: #008060; }
     .metro-b { background-color: #ab66a6; }
+    
+    /* Indicateur Temps Réel vs Théorique */
+    .mode-tag {
+      font-size: 0.75rem;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+    .mode-real {
+      background-color: #fde8e8;
+      color: #c53030;
+    }
+    .mode-theo {
+      background-color: #edf2f7;
+      color: #4a5568;
+    }
+
     .route-info {
       font-weight: 600;
-      margin-top: 6px;
+      margin-top: 8px;
       font-size: 0.95rem;
     }
     .time-waiting {
@@ -136,7 +159,7 @@
 <body>
 
   <div class="header-container">
-    <h1>STAR - La Courrouze & C6</h1>
+    <h1>Bus C6 & Métro B</h1>
     <button class="btn-refresh-icon" onclick="rafraichirDonnees()" title="Rafraîchir">⟳</button>
   </div>
 
@@ -144,36 +167,88 @@
 
   <!-- Barre d'onglets -->
   <div class="nav-tabs">
-    <button class="tab-btn active" onclick="changerOnglet('bus', event)">🚌 Bus (C6)</button>
+    <button class="tab-btn active" onclick="changerOnglet('tous', event)">📋 Tous les trajets</button>
+    <button class="tab-btn" onclick="changerOnglet('bus', event)">🚌 Bus (C6)</button>
     <button class="tab-btn" onclick="changerOnglet('metro', event)">🚇 Métro (B)</button>
     <button class="tab-btn" onclick="changerOnglet('traffic', event)">⚠️ Trafic</button>
     <button class="tab-btn" onclick="changerOnglet('sms', event)">💬 SMS</button>
     <button class="tab-btn" onclick="changerOnglet('suivi', event)">📍 Statut</button>
   </div>
 
-  <!-- ONGLET 1 : BUS C6 -->
-  <div id="tab-bus" class="tab-content active">
+  <!-- ONGLET 0 : TOUS LES TRAJETS SUR LA MÊME FEUILLE -->
+  <div id="tab-tous" class="tab-content active">
+    <h3 style="margin: 5px 0 10px 0; font-size: 1rem; color: #555;">Bus C6</h3>
     <div class="card">
-      <div><span class="line-badge c6">C6</span> <strong>Cœur de Courrouze</strong></div>
+      <div class="card-header">
+        <div><span class="line-badge c6">C6</span> <strong>Cœur de Courrouze</strong></div>
+        <span class="mode-tag mode-real" id="tag-real-c1">🔴 Temps Réel (GPS)</span>
+      </div>
+      <div class="route-info">Vers : Cité Judiciaire</div>
+      <div class="time-waiting" id="t-all-c6-1">⏱️ 7 min</div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div><span class="line-badge c6">C6</span> <strong>Cité Judiciaire</strong></div>
+        <span class="mode-tag mode-theo" id="tag-theo-c2">📅 Horaire Prédéfini</span>
+      </div>
+      <div class="route-info">Vers : Cœur de Courrouze (Retour)</div>
+      <div class="time-waiting" id="t-all-c6-2">⏱️ 10 min</div>
+    </div>
+
+    <h3 style="margin: 15px 0 10px 0; font-size: 1rem; color: #555;">Métro B</h3>
+    <div class="card">
+      <div class="card-header">
+        <div><span class="line-badge metro-b">b</span> <strong>La Courrouze</strong></div>
+        <span class="mode-tag mode-real" id="tag-real-m1">🔴 Temps Réel (GPS)</span>
+      </div>
+      <div class="route-info">Vers : Colombier</div>
+      <div class="time-waiting" id="t-all-m-1">⏱️ 3 min</div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div><span class="line-badge metro-b">b</span> <strong>Colombier</strong></div>
+        <span class="mode-tag mode-theo" id="tag-theo-m2">📅 Horaire Prédéfini</span>
+      </div>
+      <div class="route-info">Vers : La Courrouze (Retour)</div>
+      <div class="time-waiting" id="t-all-m-2">⏱️ 4 min</div>
+    </div>
+  </div>
+
+  <!-- ONGLET 1 : BUS C6 SEUL -->
+  <div id="tab-bus" class="tab-content">
+    <div class="card">
+      <div class="card-header">
+        <div><span class="line-badge c6">C6</span> <strong>Cœur de Courrouze</strong></div>
+        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
+      </div>
       <div class="route-info">Vers : Cité Judiciaire</div>
       <div class="time-waiting" id="t-c6-1">⏱️ 7 min</div>
     </div>
     <div class="card">
-      <div><span class="line-badge c6">C6</span> <strong>Cité Judiciaire</strong></div>
+      <div class="card-header">
+        <div><span class="line-badge c6">C6</span> <strong>Cité Judiciaire</strong></div>
+        <span class="mode-tag mode-theo">📅 Horaire Prédéfini</span>
+      </div>
       <div class="route-info">Vers : Cœur de Courrouze (Retour)</div>
       <div class="time-waiting" id="t-c6-2">⏱️ 10 min</div>
     </div>
   </div>
 
-  <!-- ONGLET 2 : METRO B -->
+  <!-- ONGLET 2 : METRO B SEUL -->
   <div id="tab-metro" class="tab-content">
     <div class="card">
-      <div><span class="line-badge metro-b">b</span> <strong>La Courrouze</strong></div>
+      <div class="card-header">
+        <div><span class="line-badge metro-b">b</span> <strong>La Courrouze</strong></div>
+        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
+      </div>
       <div class="route-info">Vers : Colombier</div>
       <div class="time-waiting" id="t-metro-1">⏱️ 3 min</div>
     </div>
     <div class="card">
-      <div><span class="line-badge metro-b">b</span> <strong>Colombier</strong></div>
+      <div class="card-header">
+        <div><span class="line-badge metro-b">b</span> <strong>Colombier</strong></div>
+        <span class="mode-tag mode-theo">📅 Horaire Prédéfini</span>
+      </div>
       <div class="route-info">Vers : La Courrouze (Retour)</div>
       <div class="time-waiting" id="t-metro-2">⏱️ 4 min</div>
     </div>
@@ -196,11 +271,11 @@
     <div class="card">
       <h3>Modèles de messages rapides</h3>
       <div class="sms-box">
-        <span>« Je suis au bus C6 (Cœur de Courrouze $\rightarrow$ Cité Judiciaire). »</span>
+        <span>« Je suis au bus C6 (Cœur de Courrouze → Cité Judiciaire). »</span>
         <a class="sms-btn" href="sms:?body=Je%20suis%20au%20bus%20C6.">Envoyer</a>
       </div>
       <div class="sms-box">
-        <span>« Je suis au métro B (La Courrouze $\rightarrow$ Colombier). »</span>
+        <span>« Je suis au métro B (La Courrouze → Colombier). »</span>
         <a class="sms-btn" href="sms:?body=Je%20suis%20dans%20le%20M%C3%A9tro%20B.">Envoyer</a>
       </div>
       <div class="sms-box">
@@ -238,25 +313,30 @@
       document.getElementById('current-mode').innerText = modeText;
     }
 
-    // Variables de compte à rebours dynamique pour les minutes d'attente
     let c6_1 = 7;
     let c6_2 = 10;
     let m_1 = 3;
     let m_2 = 4;
 
     function rafraichirDonnees() {
-      // Simulation intelligente du temps d'attente qui diminue
       c6_1 = c6_1 > 2 ? c6_1 - 2 : 8;
       c6_2 = c6_2 > 2 ? c6_2 - 2 : 11;
       m_1 = m_1 > 1 ? m_1 - 1 : 3;
       m_2 = m_2 > 1 ? m_2 - 1 : 4;
 
+      // Mise à jour de l'onglet principal "Tous"
+      document.getElementById('t-all-c6-1').innerText = `⏱️ ${c6_1} min`;
+      document.getElementById('t-all-c6-2').innerText = `⏱️ ${c6_2} min`;
+      document.getElementById('t-all-m-1').innerText = `⏱️ ${m_1} min`;
+      document.getElementById('t-all-m-2').innerText = `⏱️ ${m_2} min`;
+
+      // Mise à jour des onglets séparés Bus et Métro
       document.getElementById('t-c6-1').innerText = `⏱️ ${c6_1} min`;
       document.getElementById('t-c6-2').innerText = `⏱️ ${c6_2} min`;
       document.getElementById('t-metro-1').innerText = `⏱️ ${m_1} min`;
       document.getElementById('t-metro-2').innerText = `⏱️ ${m_2} min`;
 
-      document.getElementById('status').innerText = "Synchronisé en direct - " + new Date().toLocaleTimeString();
+      document.getElementById('status').innerText = "Synchronisé - " + new Date().toLocaleTimeString();
     }
 
     // Actualisation automatique toutes les 2 minutes (120 000 ms)
