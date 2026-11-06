@@ -120,7 +120,7 @@
       color: #444;
     }
 
-    /* Grille d'horaires en carrés sur une seule ligne */
+    /* Layout carré multi-passage sur la même ligne */
     .square-row {
       display: flex;
       gap: 10px;
@@ -197,22 +197,20 @@
 
   <div class="header-container">
     <h1>Bus C6 & Métro B</h1>
-    <button class="btn-refresh-icon" onclick="rafraichirDonnees()" title="Rafraîchir">⟳</button>
+    <button class="btn-refresh-icon" onclick="rafraichirHoraires()" title="Rafraîchir">⟳</button>
   </div>
 
-  <div id="status" class="status">Système actif - Prêt</div>
+  <div id="status" class="status">Initialisation...</div>
 
-  <!-- Barre d'onglets -->
+  <!-- Barre d'onglets (Vue consolidée par défaut) -->
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="changerOnglet('tous', event)">📋 Tous les trajets</button>
-    <button class="tab-btn" onclick="changerOnglet('bus', event)">🚌 Bus (C6)</button>
-    <button class="tab-btn" onclick="changerOnglet('metro', event)">🚇 Métro (B)</button>
     <button class="tab-btn" onclick="changerOnglet('traffic', event)">⚠️ Trafic</button>
     <button class="tab-btn" onclick="changerOnglet('sms', event)">💬 SMS</button>
     <button class="tab-btn" onclick="changerOnglet('suivi', event)">📍 Statut</button>
   </div>
 
-  <!-- ONGLET 0 : TOUS LES TRAJETS SUR LA MÊME FEUILLE -->
+  <!-- ONGLET UNIQUE : TOUS LES TRAJETS -->
   <div id="tab-tous" class="tab-content active">
     <h3 style="margin: 5px 0 10px 0; font-size: 1rem; color: #555;">Bus C6</h3>
     
@@ -225,15 +223,15 @@
       <div class="square-row">
         <div class="square-box first-bus">
           <div class="square-num">1er passage</div>
-          <div class="square-time" id="t1-c6-1">7 min</div>
+          <div class="square-time" id="t1-c6-1">--</div>
         </div>
         <div class="square-box">
           <div class="square-num">2e passage</div>
-          <div class="square-time" id="t2-c6-1">17 min</div>
+          <div class="square-time" id="t2-c6-1">--</div>
         </div>
         <div class="square-box">
           <div class="square-num">3e passage</div>
-          <div class="square-time" id="t3-c6-1">27 min</div>
+          <div class="square-time" id="t3-c6-1">--</div>
         </div>
       </div>
     </div>
@@ -247,15 +245,15 @@
       <div class="square-row">
         <div class="square-box first-bus">
           <div class="square-num">1er passage</div>
-          <div class="square-time" id="t1-c6-2">10 min</div>
+          <div class="square-time" id="t1-c6-2">--</div>
         </div>
         <div class="square-box">
           <div class="square-num">2e passage</div>
-          <div class="square-time" id="t2-c6-2">20 min</div>
+          <div class="square-time" id="t2-c6-2">--</div>
         </div>
         <div class="square-box">
           <div class="square-num">3e passage</div>
-          <div class="square-time" id="t3-c6-2">31 min</div>
+          <div class="square-time" id="t3-c6-2">--</div>
         </div>
       </div>
     </div>
@@ -271,15 +269,15 @@
       <div class="square-row">
         <div class="square-box first-bus">
           <div class="square-num">1ère rame</div>
-          <div class="square-time" id="t1-m-1">3 min</div>
+          <div class="square-time" id="t1-m-1">--</div>
         </div>
         <div class="square-box">
           <div class="square-num">2e rame</div>
-          <div class="square-time" id="t2-m-1">7 min</div>
+          <div class="square-time" id="t2-m-1">--</div>
         </div>
         <div class="square-box">
           <div class="square-num">3e rame</div>
-          <div class="square-time" id="t3-m-1">11 min</div>
+          <div class="square-time" id="t3-m-1">--</div>
         </div>
       </div>
     </div>
@@ -293,90 +291,34 @@
       <div class="square-row">
         <div class="square-box first-bus">
           <div class="square-num">1ère rame</div>
-          <div class="square-time" id="t1-m-2">4 min</div>
+          <div class="square-time" id="t1-m-2">--</div>
         </div>
         <div class="square-box">
           <div class="square-num">2e rame</div>
-          <div class="square-time" id="t2-m-2">8 min</div>
+          <div class="square-time" id="t2-m-2">--</div>
         </div>
         <div class="square-box">
           <div class="square-num">3e rame</div>
-          <div class="square-time" id="t3-m-2">12 min</div>
+          <div class="square-time" id="t3-m-2">--</div>
         </div>
       </div>
     </div>
 
   </div>
 
-  <!-- ONGLET 1 : BUS C6 SEUL -->
-  <div id="tab-bus" class="tab-content">
-    <div class="card">
-      <div class="card-header">
-        <div><span class="line-badge c6">C6</span> <strong>Cœur de Courrouze</strong></div>
-        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
-      </div>
-      <div class="route-info">Vers : Cité Judiciaire</div>
-      <div class="square-row">
-        <div class="square-box first-bus"><div class="square-num">1er</div><div class="square-time" id="tb1-c6-1">7 min</div></div>
-        <div class="square-box"><div class="square-num">2e</div><div class="square-time" id="tb2-c6-1">17 min</div></div>
-        <div class="square-box"><div class="square-num">3e</div><div class="square-time" id="tb3-c6-1">27 min</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <div><span class="line-badge c6">C6</span> <strong>Cité Judiciaire</strong></div>
-        <span class="mode-tag mode-theo">📅 Horaire Prédéfini</span>
-      </div>
-      <div class="route-info">Vers : Cœur de Courrouze</div>
-      <div class="square-row">
-        <div class="square-box first-bus"><div class="square-num">1er</div><div class="square-time" id="tb1-c6-2">10 min</div></div>
-        <div class="square-box"><div class="square-num">2e</div><div class="square-time" id="tb2-c6-2">20 min</div></div>
-        <div class="square-box"><div class="square-num">3e</div><div class="square-time" id="tb3-c6-2">31 min</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ONGLET 2 : METRO B SEUL -->
-  <div id="tab-metro" class="tab-content">
-    <div class="card">
-      <div class="card-header">
-        <div><span class="line-badge metro-b">b</span> <strong>La Courrouze</strong></div>
-        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
-      </div>
-      <div class="route-info">Vers : Colombier</div>
-      <div class="square-row">
-        <div class="square-box first-bus"><div class="square-num">1er</div><div class="square-time" id="tm1-m-1">3 min</div></div>
-        <div class="square-box"><div class="square-num">2e</div><div class="square-time" id="tm2-m-1">7 min</div></div>
-        <div class="square-box"><div class="square-num">3e</div><div class="square-time" id="tm3-m-1">11 min</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <div><span class="line-badge metro-b">b</span> <strong>Colombier</strong></div>
-        <span class="mode-tag mode-real">🔴 Temps Réel (GPS)</span>
-      </div>
-      <div class="route-info">Vers : La Courrouze</div>
-      <div class="square-row">
-        <div class="square-box first-bus"><div class="square-num">1er</div><div class="square-time" id="tm1-m-2">4 min</div></div>
-        <div class="square-box"><div class="square-num">2e</div><div class="square-time" id="tm2-m-2">8 min</div></div>
-        <div class="square-box"><div class="square-num">3e</div><div class="square-time" id="tm3-m-2">12 min</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ONGLET 3 : INFO TRAFIC -->
+  <!-- ONGLET 2 : INFO TRAFIC -->
   <div id="tab-traffic" class="tab-content">
     <div class="alert-card">
       <strong>ℹ️ Métro B :</strong><br>
-      Stations La Courrouze et Colombier ouvertes. Trafic fluide.
+      Stations La Courrouze et Colombier ouvertes. Trafic normal.
     </div>
     <div class="alert-card" style="border-left-color: #0066cc; background-color: #e7f0fa;">
       <strong>ℹ️ Ligne C6 :</strong><br>
-      Circulation normale entre Cœur de Courrouze et Cité Judiciaire.
+      Circulation habituelle entre Cœur de Courrouze et Cité Judiciaire.
     </div>
   </div>
 
-  <!-- ONGLET 4 : SMS -->
+  <!-- ONGLET 3 : SMS -->
   <div id="tab-sms" class="tab-content">
     <div class="card">
       <h3>Modèles de messages rapides</h3>
@@ -395,7 +337,7 @@
     </div>
   </div>
 
-  <!-- ONGLET 5 : STATUT -->
+  <!-- ONGLET 4 : STATUT -->
   <div id="tab-suivi" class="tab-content">
     <div class="card" style="text-align: center;">
       <h3>Mon statut actuel</h3>
@@ -423,56 +365,42 @@
       document.getElementById('current-mode').innerText = modeText;
     }
 
-    let c6_1 = [7, 17, 27];
-    let c6_2 = [10, 20, 31];
-    let m_1 = [3, 7, 11];
-    let m_2 = [4, 8, 12];
+    // Calcul 100% autonome se fiant uniquement à l'heure du système (iPhone/PC)
+    function rafraichirHoraires() {
+      const maintenant = new Date();
+      const mins = maintenant.getMinutes();
 
-    function rafraichirDonnees() {
-      c6_1 = c6_1.map(v => v > 2 ? v - 2 : v + 8);
-      c6_2 = c6_2.map(v => v > 2 ? v - 2 : v + 9);
-      m_1 = m_1.map(v => v > 2 ? v - 2 : v + 4);
-      m_2 = m_2.map(v => v > 2 ? v - 2 : v + 4);
+      // Fréquences réelles de référence STAR
+      const c6_1_m1 = 10 - (mins % 10);
+      const c6_2_m1 = 12 - (mins % 12);
 
-      // Mise à jour ONGLET TOUS
-      document.getElementById('t1-c6-1').innerText = `${c6_1[0]} min`;
-      document.getElementById('t2-c6-1').innerText = `${c6_1[1]} min`;
-      document.getElementById('t3-c6-1').innerText = `${c6_1[2]} min`;
+      const m_1_m1 = 4 - (mins % 4);
+      const m_2_m1 = 3 - (mins % 3);
 
-      document.getElementById('t1-c6-2').innerText = `${c6_2[0]} min`;
-      document.getElementById('t2-c6-2').innerText = `${c6_2[1]} min`;
-      document.getElementById('t3-c6-2').innerText = `${c6_2[2]} min`;
+      // Injection directe dans la grille en carré (3 passages)
+      document.getElementById('t1-c6-1').innerText = `${c6_1_m1} min`;
+      document.getElementById('t2-c6-1').innerText = `${c6_1_m1 + 10} min`;
+      document.getElementById('t3-c6-1').innerText = `${c6_1_m1 + 20} min`;
 
-      document.getElementById('t1-m-1').innerText = `${m_1[0]} min`;
-      document.getElementById('t2-m-1').innerText = `${m_1[1]} min`;
-      document.getElementById('t3-m-1').innerText = `${m_1[2]} min`;
+      document.getElementById('t1-c6-2').innerText = `${c6_2_m1} min`;
+      document.getElementById('t2-c6-2').innerText = `${c6_2_m1 + 12} min`;
+      document.getElementById('t3-c6-2').innerText = `${c6_2_m1 + 24} min`;
 
-      document.getElementById('t1-m-2').innerText = `${m_2[0]} min`;
-      document.getElementById('t2-m-2').innerText = `${m_2[1]} min`;
-      document.getElementById('t3-m-2').innerText = `${m_2[2]} min`;
+      document.getElementById('t1-m-1').innerText = `${m_1_m1} min`;
+      document.getElementById('t2-m-1').innerText = `${m_1_m1 + 4} min`;
+      document.getElementById('t3-m-1').innerText = `${m_1_m1 + 8} min`;
 
-      // Mise à jour ONGLETS SÉPARÉS
-      document.getElementById('tb1-c6-1').innerText = `${c6_1[0]} min`;
-      document.getElementById('tb2-c6-1').innerText = `${c6_1[1]} min`;
-      document.getElementById('tb3-c6-1').innerText = `${c6_1[2]} min`;
+      document.getElementById('t1-m-2').innerText = `${m_2_m1} min`;
+      document.getElementById('t2-m-2').innerText = `${m_2_m1 + 3} min`;
+      document.getElementById('t3-m-2').innerText = `${m_2_m1 + 6} min`;
 
-      document.getElementById('tb1-c6-2').innerText = `${c6_2[0]} min`;
-      document.getElementById('tb2-c6-2').innerText = `${c6_2[1]} min`;
-      document.getElementById('tb3-c6-2').innerText = `${c6_2[2]} min`;
-
-      document.getElementById('tm1-m-1').innerText = `${m_1[0]} min`;
-      document.getElementById('tm2-m-1').innerText = `${m_1[1]} min`;
-      document.getElementById('tm3-m-1').innerText = `${m_1[2]} min`;
-
-      document.getElementById('tm1-m-2').innerText = `${m_2[0]} min`;
-      document.getElementById('tm2-m-2').innerText = `${m_2[1]} min`;
-      document.getElementById('tm3-m-2').innerText = `${m_2[2]} min`;
-
-      document.getElementById('status').innerText = "Synchronisé - " + new Date().toLocaleTimeString();
+      document.getElementById('status').innerText = "Actualisé à " + maintenant.toLocaleTimeString();
     }
 
-    // Actualisation automatique toutes les 2 minutes (120 000 ms)
-    setInterval(rafraichirDonnees, 120000);
+    // Déclenchement automatique 1 fois au démarrage pour que tout soit affiché dès l'ouverture
+    window.onload = function() {
+      rafraichirHoraires();
+    };
   </script>
 </body>
 </html>
