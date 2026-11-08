@@ -274,7 +274,7 @@
       const next = document.getElementById(nextId);
 
       const passages = rawRecords
-        .map(r => processPassage(r.heurepassage || r.heurerealisee || (r.fields && r.fields.heurepassage)))
+        .map(r => processPassage(r.heurepassage || r.heurerealisee))
         .filter(p => p && p.minutes >= 0)
         .sort((a, b) => a.minutes - b.minutes);
 
@@ -300,20 +300,24 @@
     }
 
     async function updateAllData() {
-      // Requetes directes sur le dataset de Rennes Metropole v2.1
-      const c6CoeurUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?limit=10&where=nomcourtligne%3D%22C6%22";
-      const c6Data = await fetchFromSTAR(c6CoeurUrl);
+      // On récupère large sur la ligne C6 et on filtre dynamiquement par mots-clés minuscules
+      const c6Data = await fetchFromSTAR("https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?limit=100&where=nomcourtligne%3D%22C6%22");
       
-      // Filtrage côté client pour éviter tout blocage d'encodage d'accents par l'API
-      const coeurRecords = c6Data.filter(r => (r.nomarret || "").toLowerCase().includes("courrouze"));
-      const citeRecords = c6Data.filter(r => (r.nomarret || "").toLowerCase().includes("judiciaire"));
+      const coeurRecords = c6Data.filter(r => {
+        const name = (r.nomarret || "").toLowerCase();
+        return name.includes("courrouze") || name.includes("coeur");
+      });
+      
+      const citeRecords = c6Data.filter(r => {
+        const name = (r.nomarret || "").toLowerCase();
+        return name.includes("judiciaire");
+      });
 
       renderStop("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", coeurRecords);
       renderStop("badge-c6-cite", "time-c6-cite", "next-c6-cite", citeRecords);
 
-      // Metro B
-      const metroUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?limit=20";
-      const metroData = await fetchFromSTAR(metroUrl);
+      // Métro B global
+      const metroData = await fetchFromSTAR("https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?limit=50");
 
       const courrouzeMetro = metroData.filter(r => (r.nomstation || "").toLowerCase().includes("courrouze"));
       const colombierMetro = metroData.filter(r => (r.nomstation || "").toLowerCase().includes("colombier"));
