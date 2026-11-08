@@ -12,6 +12,7 @@
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --live-green: #10b981;
+      --accent: #3b82f6;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -37,9 +38,18 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       color: var(--text);
-      padding: 8px 12px;
+      padding: 8px 14px;
       border-radius: 8px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .btn-refresh:hover {
+      background: #1e293b;
     }
 
     .section-title {
@@ -48,6 +58,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      font-weight: 600;
     }
 
     .grid {
@@ -60,7 +71,7 @@
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 12px;
-      padding: 16px;
+      padding: 18px;
     }
 
     .card-header {
@@ -70,17 +81,18 @@
       margin-bottom: 12px;
     }
 
-    .stop-name { font-size: 1.1rem; font-weight: 600; }
-    .direction-sub { font-size: 0.85rem; color: var(--text-muted); }
+    .stop-name { font-size: 1.15rem; font-weight: 700; }
+    .direction-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
 
     .badge-status {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       font-size: 0.75rem;
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 20px;
       background: rgba(255,255,255,0.05);
+      color: var(--text-muted);
     }
 
     .badge-status.live {
@@ -108,22 +120,25 @@
     }
 
     .main-time {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 800;
-      margin: 12px 0;
+      margin: 14px 0;
+      letter-spacing: -0.5px;
     }
 
     .next-times {
       display: flex;
+      align-items: center;
       gap: 8px;
       font-size: 0.85rem;
       color: var(--text-muted);
     }
 
     .time-chip {
-      background: rgba(255, 255, 255, 0.05);
-      padding: 2px 8px;
-      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: var(--text);
     }
   </style>
 </head>
@@ -131,7 +146,10 @@
 
   <header>
     <h1>STAR Courrouze</h1>
-    <button class="btn-refresh" onclick="updateAllData()">🔄 Actualiser</button>
+    <button class="btn-refresh" onclick="updateAllData()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.13 15.57a10 10 0 1 0 3.93-9.57L2 8"/></svg>
+      Actualiser
+    </button>
   </header>
 
   <div class="section-title">🚌 Bus C6</div>
@@ -205,17 +223,19 @@
         const res = await fetch(fullUrl);
         if (res.ok) {
           const data = await res.json();
-          if (data && data.results && data.results.length > 0) {
-            return { success: true, results: data.results };
+          const items = data.results || data.records || [];
+          if (items.length > 0) {
+            return { success: true, results: items };
           }
         }
       } catch (e) {
-        console.error("Erreur réseau:", e);
+        console.error("Erreur de récupération:", e);
       }
       return { success: false, results: [] };
     }
 
     function computeMinutes(departureTimeStr) {
+      if (!departureTimeStr) return 0;
       const now = new Date();
       const dep = new Date(departureTimeStr);
       const diffMinutes = Math.round((dep - now) / 60000);
@@ -247,41 +267,41 @@
     }
 
     async function updateAllData() {
-      // BUS C6 - Coeur de Courrouze
-      const c6CoeurUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne=\"C6\" AND nomarret=\"Cœur de Courrouze\"&order_by=heurepassage ASC&limit=3";
+      // BUS C6 - Cœur de Courrouze
+      const c6CoeurUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22C%C5%93ur%20de%20Courrouze%22&order_by=heurepassage%20ASC&limit=3";
       const c6CoeurData = await fetchStopData(c6CoeurUrl);
       if (c6CoeurData.success) {
-        const mins = c6CoeurData.results.map(r => computeMinutes(r.heurepassage));
+        const mins = c6CoeurData.results.map(r => computeMinutes(r.heurepassage || (r.fields && r.fields.heurepassage)));
         renderCard("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", mins, true);
       } else {
         renderCard("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", [3, 11, 19], false);
       }
 
       // BUS C6 - Cité Judiciaire
-      const c6CiteUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne=\"C6\" AND nomarret=\"Cité Judiciaire\"&order_by=heurepassage ASC&limit=3";
+      const c6CiteUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22Cit%C3%A9%20Judiciaire%22&order_by=heurepassage%20ASC&limit=3";
       const c6CiteData = await fetchStopData(c6CiteUrl);
       if (c6CiteData.success) {
-        const mins = c6CiteData.results.map(r => computeMinutes(r.heurepassage));
+        const mins = c6CiteData.results.map(r => computeMinutes(r.heurepassage || (r.fields && r.fields.heurepassage)));
         renderCard("badge-c6-cite", "time-c6-cite", "next-c6-cite", mins, true);
       } else {
         renderCard("badge-c6-cite", "time-c6-cite", "next-c6-cite", [2, 9, 17], false);
       }
 
-      // METRO B - La Courrouze
-      const mbCourrouzeUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation=\"La Courrouze\"&limit=3";
+      // MÉTRO B - La Courrouze
+      const mbCourrouzeUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation%3D%22La%20Courrouze%22&limit=3";
       const mbCourrouzeData = await fetchStopData(mbCourrouzeUrl);
       if (mbCourrouzeData.success) {
-        const mins = mbCourrouzeData.results.map(r => computeMinutes(r.heurepassage)).sort((a,b)=>a-b);
+        const mins = mbCourrouzeData.results.map(r => computeMinutes(r.heurepassage || (r.fields && r.fields.heurepassage))).sort((a,b)=>a-b);
         renderCard("badge-mb-courrouze", "time-mb-courrouze", "next-mb-courrouze", mins, true);
       } else {
         renderCard("badge-mb-courrouze", "time-mb-courrouze", "next-mb-courrouze", [2, 5, 8], false);
       }
 
-      // METRO B - Colombier
-      const mbColombierUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation=\"Colombier\"&limit=3";
+      // MÉTRO B - Colombier
+      const mbColombierUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation%3D%22Colombier%22&limit=3";
       const mbColombierData = await fetchStopData(mbColombierUrl);
       if (mbColombierData.success) {
-        const mins = mbColombierData.results.map(r => computeMinutes(r.heurepassage)).sort((a,b)=>a-b);
+        const mins = mbColombierData.results.map(r => computeMinutes(r.heurepassage || (r.fields && r.fields.heurepassage))).sort((a,b)=>a-b);
         renderCard("badge-mb-colombier", "time-mb-colombier", "next-mb-colombier", mins, true);
       } else {
         renderCard("badge-mb-colombier", "time-mb-colombier", "next-mb-colombier", [1, 4, 7], false);
