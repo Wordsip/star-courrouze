@@ -105,20 +105,23 @@
           <h2 class="font-bold text-lg text-slate-100">Métro Ligne B</h2>
         </div>
         <div class="text-xs text-slate-400 flex items-center gap-1.5">
-          <i class="fa-solid fa-location-dot text-slate-500"></i>
-          <span>Station : <strong>La Courrouze</strong></span>
+          <i class="fa-solid fa-train-subway text-slate-500"></i>
+          <span>Stations sélectionnées</span>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Direction Viasilva -->
+        <!-- Station La Courrouze -->
         <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 relative overflow-hidden backdrop-blur hover:border-purple-500/40 transition-all">
           <div class="flex items-center justify-between mb-3 border-b border-slate-700/50 pb-2.5">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-arrow-right text-purple-400 text-xs"></i>
-              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Direction</span>
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-purple-400 block">Station</span>
+              <h3 class="font-bold text-base text-slate-100">La Courrouze</h3>
+              <p class="text-xs text-slate-400">vers Colombier / Viasilva</p>
             </div>
-            <span class="font-bold text-sm text-slate-200">Cesson - Viasilva</span>
+            <div id="badge-metro-courrouze">
+              <!-- Live / Théorique badge -->
+            </div>
           </div>
 
           <div id="metro-viasilva-times" class="space-y-2">
@@ -129,14 +132,17 @@
           </div>
         </div>
 
-        <!-- Direction St-Jacques Gaîté -->
+        <!-- Station Colombier -->
         <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 relative overflow-hidden backdrop-blur hover:border-purple-500/40 transition-all">
           <div class="flex items-center justify-between mb-3 border-b border-slate-700/50 pb-2.5">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-arrow-right text-purple-400 text-xs"></i>
-              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Direction</span>
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-purple-400 block">Station</span>
+              <h3 class="font-bold text-base text-slate-100">Colombier</h3>
+              <p class="text-xs text-slate-400">vers La Courrouze / Gaîté</p>
             </div>
-            <span class="font-bold text-sm text-slate-200">St-Jacques - Gaîté</span>
+            <div id="badge-metro-colombier">
+              <!-- Live / Théorique badge -->
+            </div>
           </div>
 
           <div id="metro-gaite-times" class="space-y-2">
@@ -157,20 +163,23 @@
           <h2 class="font-bold text-lg text-slate-100">Bus Chronostar C6</h2>
         </div>
         <div class="text-xs text-slate-400 flex items-center gap-1.5">
-          <i class="fa-solid fa-location-dot text-slate-500"></i>
-          <span>Arrêts : <strong>Coeur de Courrouze / Cité Judiciaire</strong></span>
+          <i class="fa-solid fa-bus text-slate-500"></i>
+          <span>Arrêts sélectionnés</span>
         </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Direction Cesson Rigourdière -->
+        <!-- Arrêt Cœur de Courrouze -->
         <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 relative overflow-hidden backdrop-blur hover:border-sky-500/40 transition-all">
           <div class="flex items-center justify-between mb-3 border-b border-slate-700/50 pb-2.5">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-arrow-right text-sky-400 text-xs"></i>
-              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Direction</span>
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-sky-400 block">Arrêt</span>
+              <h3 class="font-bold text-base text-slate-100">Cœur de Courrouze</h3>
+              <p class="text-xs text-slate-400">vers Cité Judiciaire / Cesson</p>
             </div>
-            <span class="font-bold text-sm text-slate-200">Cesson - Rigourdière</span>
+            <div id="badge-bus-courrouze">
+              <!-- Live / Théorique badge -->
+            </div>
           </div>
 
           <div id="bus-cesson-times" class="space-y-2">
@@ -181,14 +190,17 @@
           </div>
         </div>
 
-        <!-- Direction Aéroport / Gaîté -->
+        <!-- Arrêt Cité Judiciaire -->
         <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 relative overflow-hidden backdrop-blur hover:border-sky-500/40 transition-all">
           <div class="flex items-center justify-between mb-3 border-b border-slate-700/50 pb-2.5">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-arrow-right text-sky-400 text-xs"></i>
-              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Direction</span>
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-sky-400 block">Arrêt</span>
+              <h3 class="font-bold text-base text-slate-100">Cité Judiciaire</h3>
+              <p class="text-xs text-slate-400">vers Cœur de Courrouze / Aéroport</p>
             </div>
-            <span class="font-bold text-sm text-slate-200">Aéroport / St-Jacques</span>
+            <div id="badge-bus-judiciaire">
+              <!-- Live / Théorique badge -->
+            </div>
           </div>
 
           <div id="bus-aeroport-times" class="space-y-2">
@@ -252,7 +264,8 @@
       metroViasilva: [],
       metroGaite: [],
       busCesson: [],
-      busAeroport: []
+      busAeroport: [],
+      isLive: false
     };
 
     function calculateMinutes(dateString) {
@@ -274,21 +287,20 @@
           fetch(METRO_API_URL).then(r => r.json())
         ]);
 
-        let success = false;
+        let busSuccess = false;
+        let metroSuccess = false;
 
         // Bus Processing
-        if (busRes.status === 'fulfilled' && busRes.value && busRes.value.results) {
-          parseBusResults(busRes.value.results);
-          success = true;
+        if (busRes.status === 'fulfilled' && busRes.value && busRes.value.results && busRes.value.results.length > 0) {
+          busSuccess = parseBusResults(busRes.value.results);
         }
 
         // Metro Processing
-        if (metroRes.status === 'fulfilled' && metroRes.value && metroRes.value.results) {
-          parseMetroResults(metroRes.value.results);
-          success = true;
+        if (metroRes.status === 'fulfilled' && metroRes.value && metroRes.value.results && metroRes.value.results.length > 0) {
+          metroSuccess = parseMetroResults(metroRes.value.results);
         }
 
-        // If direct fetch returns empty records, construct reliable real-time estimate based on STAR schedule
+        // Fallbacks if data empty
         if (state.busCesson.length === 0 && state.busAeroport.length === 0) {
           generateEstimatedBus();
         }
@@ -296,7 +308,8 @@
           generateEstimatedMetro();
         }
 
-        updateStatusTag(true);
+        state.isLive = busSuccess || metroSuccess;
+        updateStatusTag(state.isLive);
         updateUI();
 
         const now = new Date();
@@ -306,6 +319,7 @@
         console.error("Erreur lors de la récupération des données:", error);
         generateEstimatedBus();
         generateEstimatedMetro();
+        state.isLive = false;
         updateStatusTag(false);
         updateUI();
       } finally {
@@ -318,11 +332,12 @@
     function parseBusResults(results) {
       const cesson = [];
       const aeroport = [];
+      let found = false;
 
       results.forEach(r => {
         const arret = (r.nomarret || r.arret || '').toLowerCase();
-        // Check for Courrouze or nearby stop Cité Judiciaire
         if (arret.includes('courrouze') || arret.includes('judiciaire') || arret.includes('maniez')) {
+          found = true;
           const departure = r.depart || r.arrivee || r.heurereception;
           const mins = calculateMinutes(departure);
           if (mins !== null && mins >= 0 && mins < 60) {
@@ -336,17 +351,22 @@
         }
       });
 
-      state.busCesson = Array.from(new Set(cesson)).sort((a,b) => a - b).slice(0, 3);
-      state.busAeroport = Array.from(new Set(aeroport)).sort((a,b) => a - b).slice(0, 3);
+      if (found) {
+        state.busCesson = Array.from(new Set(cesson)).sort((a,b) => a - b).slice(0, 3);
+        state.busAeroport = Array.from(new Set(aeroport)).sort((a,b) => a - b).slice(0, 3);
+      }
+      return found && (cesson.length > 0 || aeroport.length > 0);
     }
 
     function parseMetroResults(results) {
       const viasilva = [];
       const gaite = [];
+      let found = false;
 
       results.forEach(r => {
         const arret = (r.nomarret || '').toLowerCase();
         if (arret.includes('courrouze') || arret.includes('colombier')) {
+          found = true;
           const departure = r.depart || r.arrivee || r.heurereception;
           const mins = calculateMinutes(departure);
           if (mins !== null && mins >= 0 && mins < 60) {
@@ -360,8 +380,11 @@
         }
       });
 
-      state.metroViasilva = Array.from(new Set(viasilva)).sort((a,b) => a - b).slice(0, 3);
-      state.metroGaite = Array.from(new Set(gaite)).sort((a,b) => a - b).slice(0, 3);
+      if (found) {
+        state.metroViasilva = Array.from(new Set(viasilva)).sort((a,b) => a - b).slice(0, 3);
+        state.metroGaite = Array.from(new Set(gaite)).sort((a,b) => a - b).slice(0, 3);
+      }
+      return found && (viasilva.length > 0 || gaite.length > 0);
     }
 
     function generateEstimatedBus() {
@@ -378,6 +401,22 @@
       const m2 = (4 - (min % 4)) % 4;
       state.metroViasilva = [m1 === 0 ? 1 : m1, m1 + 3, m1 + 6];
       state.metroGaite = [m2 === 0 ? 2 : m2, m2 + 3, m2 + 7];
+    }
+
+    function renderLiveBadge(isLive) {
+      if (isLive) {
+        return `
+          <span class="inline-flex items-center px-2 py-1 rounded-lg text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-ping"></span>
+            En direct
+          </span>
+        `;
+      }
+      return `
+        <span class="inline-flex items-center px-2 py-1 rounded-lg text-[10px] font-semibold bg-slate-700/50 text-slate-400 border border-slate-700">
+          <i class="fa-regular fa-clock mr-1 text-[9px]"></i> Théorique
+        </span>
+      `;
     }
 
     function renderTimeCards(list, color = 'purple') {
@@ -422,6 +461,14 @@
     }
 
     function updateUI() {
+      // Update Card Badges
+      const badgeHTML = renderLiveBadge(state.isLive);
+      document.getElementById('badge-metro-courrouze').innerHTML = badgeHTML;
+      document.getElementById('badge-metro-colombier').innerHTML = badgeHTML;
+      document.getElementById('badge-bus-courrouze').innerHTML = badgeHTML;
+      document.getElementById('badge-bus-judiciaire').innerHTML = badgeHTML;
+
+      // Update Times
       document.getElementById('metro-viasilva-times').innerHTML = renderTimeCards(state.metroViasilva, 'purple');
       document.getElementById('metro-gaite-times').innerHTML = renderTimeCards(state.metroGaite, 'purple');
       document.getElementById('bus-cesson-times').innerHTML = renderTimeCards(state.busCesson, 'sky');
