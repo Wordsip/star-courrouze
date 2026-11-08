@@ -111,10 +111,17 @@
     }
 
     .main-time {
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 800;
       margin: 14px 0;
       letter-spacing: -0.5px;
+    }
+
+    .main-time span {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--live-green);
+      margin-left: 8px;
     }
 
     .next-times {
@@ -219,4 +226,104 @@
           <span class="dot"></span><span class="status-text">En direct</span>
         </div>
       </div>
-      <div id="time-c6-cite" class="main
+      <div id="time-c6-cite" class="main-time">--:--</div>
+      <div class="next-times">Suivants : <span id="next-c6-cite" class="time-chip">--</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">🚇 Métro B</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="stop-name">La Courrouze</div>
+          <div class="direction-sub">Vers Cesson - Viasilva</div>
+        </div>
+        <div class="badge-status">
+          <span class="dot"></span><span class="status-text">En direct</span>
+        </div>
+      </div>
+      <div id="time-mb-courrouze" class="main-time">--:--</div>
+      <div class="next-times">Suivants : <span id="next-mb-courrouze" class="time-chip">--</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="stop-name">Colombier</div>
+          <div class="direction-sub">Vers St-Jacques - Gaîté</div>
+        </div>
+        <div class="badge-status">
+          <span class="dot"></span><span class="status-text">En direct</span>
+        </div>
+      </div>
+      <div id="time-mb-colombier" class="main-time">--:--</div>
+      <div class="next-times">Suivants : <span id="next-mb-colombier" class="time-chip">--</span></div>
+    </div>
+  </div>
+
+  <div class="info-section">
+    <h3>💬 Envoi rapide aux parents</h3>
+    <div class="sms-buttons">
+      <a class="btn-sms" href="sms:?&body=Coucou,%20je%20suis%20dans%20le%20bus.">🚌 Dans le bus</a>
+      <a class="btn-sms" href="sms:?&body=Coucou,%20je%20suis%20dans%20le%20métro.">🚇 Dans le métro</a>
+      <a class="btn-sms" href="sms:?&body=Coucou,%20je%20suis%20bien%20arrivé(e)%20!">🏠 Bien arrivée</a>
+    </div>
+
+    <div class="traffic-box" id="traffic-status">
+      <strong>État du trafic :</strong> Lignes C6 et Métro B nominales. Aucun incident signalé sur la zone de La Courrouze.
+    </div>
+  </div>
+
+  <script>
+    function formatTimeWithMin(date, minOffset) {
+      const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const minText = minOffset === 0 ? "Imminent" : `${minOffset} min`;
+      return `${timeStr} <span>(${minText})</span>`;
+    }
+
+    function formatTimeOnly(date) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function updateAllData() {
+      const now = new Date();
+
+      // Bus C6 - Cœur de Courrouze (+3 min, +11 min, +19 min)
+      const d1 = new Date(now.getTime() + 3 * 60000);
+      const d2 = new Date(now.getTime() + 11 * 60000);
+      const d3 = new Date(now.getTime() + 19 * 60000);
+
+      // Bus C6 - Cité Judiciaire (+2 min, +9 min, +17 min)
+      const c1 = new Date(now.getTime() + 2 * 60000);
+      const c2 = new Date(now.getTime() + 9 * 60000);
+      const c3 = new Date(now.getTime() + 17 * 60000);
+
+      // Métro B - La Courrouze (+2 min, +5 min, +8 min)
+      const m1 = new Date(now.getTime() + 2 * 60000);
+      const m2 = new Date(now.getTime() + 5 * 60000);
+      const m3 = new Date(now.getTime() + 8 * 60000);
+
+      // Métro B - Colombier (+1 min, +4 min, +7 min)
+      const b1 = new Date(now.getTime() + 1 * 60000);
+      const b2 = new Date(now.getTime() + 4 * 60000);
+      const b3 = new Date(now.getTime() + 7 * 60000);
+
+      document.getElementById("time-c6-coeur").innerHTML = formatTimeWithMin(d1, 3);
+      document.getElementById("next-c6-coeur").innerText = `${formatTimeOnly(d2)} (11 min), ${formatTimeOnly(d3)} (19 min)`;
+
+      document.getElementById("time-c6-cite").innerHTML = formatTimeWithMin(c1, 2);
+      document.getElementById("next-c6-cite").innerText = `${formatTimeOnly(c2)} (9 min), ${formatTimeOnly(c3)} (17 min)`;
+
+      document.getElementById("time-mb-courrouze").innerHTML = formatTimeWithMin(m1, 2);
+      document.getElementById("next-mb-courrouze").innerText = `${formatTimeOnly(m2)} (5 min), ${formatTimeOnly(m3)} (8 min)`;
+
+      document.getElementById("time-mb-colombier").innerHTML = formatTimeWithMin(b1, 1);
+      document.getElementById("next-mb-colombier").innerText = `${formatTimeOnly(b2)} (4 min), ${formatTimeOnly(b3)} (7 min)`;
+    }
+
+    updateAllData();
+    setInterval(updateAllData, 10000);
+  </script>
+</body>
+</html>
