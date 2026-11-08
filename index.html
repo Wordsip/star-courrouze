@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>STAR Courrouze - Temps Réel & SMS Parents</title>
+  <title>STAR Courrouze - GPS Temps Réel</title>
   <style>
     :root {
       --bg: #0b0f19;
@@ -48,9 +48,7 @@
       transition: background 0.2s;
     }
 
-    .btn-refresh:hover {
-      background: #1e293b;
-    }
+    .btn-refresh:hover { background: #1e293b; }
 
     .section-title {
       font-size: 1.2rem;
@@ -91,6 +89,11 @@
       font-size: 0.75rem;
       padding: 4px 10px;
       border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-muted);
+    }
+
+    .badge-status.live {
       background: rgba(16, 185, 129, 0.15);
       color: var(--live-green);
     }
@@ -99,6 +102,10 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
+      background-color: var(--text-muted);
+    }
+
+    .live .dot {
       background-color: var(--live-green);
       box-shadow: 0 0 8px var(--live-green);
       animation: pulse 1.5s infinite;
@@ -125,18 +132,8 @@
     }
 
     .next-times {
-      display: flex;
-      align-items: center;
-      gap: 8px;
       font-size: 0.85rem;
       color: var(--text-muted);
-    }
-
-    .time-chip {
-      background: rgba(255, 255, 255, 0.06);
-      padding: 3px 8px;
-      border-radius: 6px;
-      color: var(--text);
     }
 
     .info-section {
@@ -147,11 +144,7 @@
       padding: 20px;
     }
 
-    .info-section h3 {
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-      color: var(--text);
-    }
+    .info-section h3 { font-size: 1.1rem; margin-bottom: 12px; }
 
     .sms-buttons {
       display: flex;
@@ -166,27 +159,12 @@
       color: #60a5fa;
       padding: 10px 16px;
       border-radius: 8px;
-      cursor: pointer;
       font-size: 0.95rem;
       font-weight: 600;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: background 0.2s;
-    }
-
-    .btn-sms:hover {
-      background: rgba(59, 130, 246, 0.25);
-    }
-
-    .traffic-box {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      line-height: 1.5;
-      margin-top: 15px;
-      padding-top: 12px;
-      border-top: 1px solid var(--card-border);
     }
   </style>
 </head>
@@ -194,10 +172,7 @@
 
   <header>
     <h1>STAR Courrouze</h1>
-    <button class="btn-refresh" onclick="updateAllData()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M2.13 15.57a10 10 0 1 0 3.93-9.57L2 8"/></svg>
-      Actualiser
-    </button>
+    <button class="btn-refresh" onclick="updateAllData()">🔄 Actualiser</button>
   </header>
 
   <div class="section-title">🚌 Bus C6</div>
@@ -208,12 +183,12 @@
           <div class="stop-name">Cœur de Courrouze</div>
           <div class="direction-sub">Vers Cesson-Rigourdière</div>
         </div>
-        <div class="badge-status">
-          <span class="dot"></span><span class="status-text">En direct</span>
+        <div id="badge-c6-coeur" class="badge-status">
+          <span class="dot"></span><span class="status-text">Chargement...</span>
         </div>
       </div>
       <div id="time-c6-coeur" class="main-time">--:--</div>
-      <div class="next-times">Suivants : <span id="next-c6-coeur" class="time-chip">--</span></div>
+      <div class="next-times">Suivants : <span id="next-c6-coeur">--</span></div>
     </div>
 
     <div class="card">
@@ -222,12 +197,12 @@
           <div class="stop-name">Cité Judiciaire</div>
           <div class="direction-sub">Vers Aéroport / St-Jacques</div>
         </div>
-        <div class="badge-status">
-          <span class="dot"></span><span class="status-text">En direct</span>
+        <div id="badge-c6-cite" class="badge-status">
+          <span class="dot"></span><span class="status-text">Chargement...</span>
         </div>
       </div>
       <div id="time-c6-cite" class="main-time">--:--</div>
-      <div class="next-times">Suivants : <span id="next-c6-cite" class="time-chip">--</span></div>
+      <div class="next-times">Suivants : <span id="next-c6-cite">--</span></div>
     </div>
   </div>
 
@@ -239,12 +214,12 @@
           <div class="stop-name">La Courrouze</div>
           <div class="direction-sub">Vers Cesson - Viasilva</div>
         </div>
-        <div class="badge-status">
-          <span class="dot"></span><span class="status-text">En direct</span>
+        <div id="badge-mb-courrouze" class="badge-status">
+          <span class="dot"></span><span class="status-text">Chargement...</span>
         </div>
       </div>
       <div id="time-mb-courrouze" class="main-time">--:--</div>
-      <div class="next-times">Suivants : <span id="next-mb-courrouze" class="time-chip">--</span></div>
+      <div class="next-times">Suivants : <span id="next-mb-courrouze">--</span></div>
     </div>
 
     <div class="card">
@@ -253,12 +228,12 @@
           <div class="stop-name">Colombier</div>
           <div class="direction-sub">Vers St-Jacques - Gaîté</div>
         </div>
-        <div class="badge-status">
-          <span class="dot"></span><span class="status-text">En direct</span>
+        <div id="badge-mb-colombier" class="badge-status">
+          <span class="dot"></span><span class="status-text">Chargement...</span>
         </div>
       </div>
       <div id="time-mb-colombier" class="main-time">--:--</div>
-      <div class="next-times">Suivants : <span id="next-mb-colombier" class="time-chip">--</span></div>
+      <div class="next-times">Suivants : <span id="next-mb-colombier">--</span></div>
     </div>
   </div>
 
@@ -269,57 +244,89 @@
       <a class="btn-sms" href="sms:?&body=Coucou,%20je%20suis%20dans%20le%20métro.">🚇 Dans le métro</a>
       <a class="btn-sms" href="sms:?&body=Coucou,%20je%20suis%20bien%20arrivé(e)%20!">🏠 Bien arrivée</a>
     </div>
-
-    <div class="traffic-box" id="traffic-status">
-      <strong>État du trafic :</strong> Lignes C6 et Métro B nominales. Aucun incident signalé sur la zone de La Courrouze.
-    </div>
   </div>
 
   <script>
-    function getNextPassages(intervalMinutes, count) {
-      const now = new Date();
-      const passages = [];
-      const currentMin = now.getMinutes();
-      const currentSec = now.getSeconds();
-      
-      // Calcule le prochain départ basé sur la tranche d'intervalle
-      let nextMinOffset = intervalMinutes - (currentMin % intervalMinutes);
-      
-      for (let i = 0; i < count; i++) {
-        const targetDate = new Date(now.getTime() + (nextMinOffset + (i * intervalMinutes)) * 60000 - (currentSec * 1000));
-        const diffMinutes = Math.max(0, Math.round((targetDate - now) / 60000));
-        const timeStr = targetDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        passages.push({ time: timeStr, minutes: diffMinutes });
+    const WORKER_URL = "https://smalstar-proxy.godziuno.workers.dev";
+
+    async function fetchStopData(apiUrl) {
+      try {
+        const url = WORKER_URL + "/?url=" + encodeURIComponent(apiUrl);
+        const res = await fetch(url);
+        if (res.ok) {
+          const json = await res.json();
+          return json.results || json.records || [];
+        }
+      } catch (e) {
+        console.error("Erreur API:", e);
       }
-      return passages;
+      return [];
     }
 
-    function updateAllData() {
-      // Fréquences réalistes : C6 toutes les 8 min, Métro B toutes les 3 min
-      const c6Coeur = getNextPassages(8, 3);
-      const c6Cite = getNextPassages(7, 3);
-      const mbCourrouze = getNextPassages(3, 3);
-      const mbColombier = getNextPassages(3, 3);
+    function parseTime(isoStr) {
+      if (!isoStr) return null;
+      const dep = new Date(isoStr);
+      const now = new Date();
+      const diffMin = Math.round((dep - now) / 60000);
+      const formattedTime = dep.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return {
+        time: formattedTime,
+        minutes: diffMin < 0 ? 0 : diffMin
+      };
+    }
 
-      function render(mainId, nextId, data) {
-        const main = document.getElementById(mainId);
-        const next = document.getElementById(nextId);
-        if (!main || !next) return;
+    function updateCard(badgeId, mainId, nextId, records) {
+      const badge = document.getElementById(badgeId);
+      const main = document.getElementById(mainId);
+      const next = document.getElementById(nextId);
 
-        const first = data[0];
-        const minText = first.minutes === 0 ? "Imminent" : `${first.minutes} min`;
-        main.innerHTML = `${first.time} <span>(${minText})</span>`;
-        next.innerText = `${data[1].time} (${data[1].minutes} min), ${data[2].time} (${data[2].minutes} min)`;
+      if (!badge || !main || !next) return;
+
+      const items = records
+        .map(r => parseTime(r.heurerealisee || r.heurepassage))
+        .filter(Boolean);
+
+      if (items.length > 0) {
+        badge.className = "badge-status live";
+        badge.querySelector(".status-text").innerText = "En direct (GPS)";
+
+        const first = items[0];
+        const minStr = first.minutes === 0 ? "Imminent" : `${first.minutes} min`;
+        main.innerHTML = `${first.time} <span>(${minStr})</span>`;
+
+        if (items.length > 1) {
+          next.innerText = items.slice(1).map(i => `${i.time} (${i.minutes} min)`).join(", ");
+        } else {
+          next.innerText = "--";
+        }
+      } else {
+        badge.className = "badge-status";
+        badge.querySelector(".status-text").innerText = "Aucun bus";
+        main.innerText = "--:--";
+        next.innerText = "--";
       }
+    }
 
-      render("time-c6-coeur", "next-c6-coeur", c6Coeur);
-      render("time-c6-cite", "next-c6-cite", c6Cite);
-      render("time-mb-courrouze", "next-mb-courrouze", mbCourrouze);
-      render("time-mb-colombier", "next-mb-colombier", mbColombier);
+    async function updateAllData() {
+      // 1. Bus C6 - Cœur de Courrouze (Vers Cesson-Rigourdière, id arret / nom exact)
+      const c6Coeur = await fetchStopData("https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22C%C5%93ur%20de%20Courrouze%22&order_by=heurepassage%20ASC&limit=3");
+      updateCard("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", c6Coeur);
+
+      // 2. Bus C6 - Cité Judiciaire
+      const c6Cite = await fetchStopData("https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22Cit%C3%A9%20Judiciaire%22&order_by=heurepassage%20ASC&limit=3");
+      updateCard("badge-c6-cite", "time-c6-cite", "next-c6-cite", c6Cite);
+
+      // 3. Métro B - La Courrouze
+      const mbCourrouze = await fetchStopData("https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation%3D%22La%20Courrouze%22&limit=3");
+      updateCard("badge-mb-courrouze", "time-mb-courrouze", "next-mb-courrouze", mbCourrouze);
+
+      // 4. Métro B - Colombier
+      const mbColombier = await fetchStopData("https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation%3D%22Colombier%22&limit=3");
+      updateCard("badge-mb-colombier", "time-mb-colombier", "next-mb-colombier", mbColombier);
     }
 
     updateAllData();
-    setInterval(updateAllData, 1000);
+    setInterval(updateAllData, 15000);
   </script>
 </body>
 </html>
