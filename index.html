@@ -9,8 +9,6 @@
       --bg: #0b0f19;
       --card-bg: #131b2e;
       --card-border: #1e293b;
-      --accent-bus: #0284c7;
-      --accent-metro: #7c3aed;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --live-green: #10b981;
@@ -63,7 +61,6 @@
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 16px;
-      position: relative;
     }
 
     .card-header {
@@ -200,66 +197,19 @@
   </div>
 
   <script>
-    const PROXY = "https://corsproxy.io/?";
+    // Liste des 3 proxys d'interrogation en rotation/cascade
+    const PROXIES = [
+      url => "https://corsproxy.io/?" + encodeURIComponent(url),
+      url => "https://api.allorigins.win/raw?url=" + encodeURIComponent(url),
+      url => "https://thingproxy.freeboard.io/fetch/" + url
+    ];
 
-    async function fetchStopData(url) {
+    async function fetchWithTimeout(url, timeout = 2500) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeout);
       try {
-        const response = await fetch(PROXY + encodeURIComponent(url));
-        if (!response.ok) throw new Error("Erreur réseau");
-        const data = await response.json();
-        return { success: true, results: data.results || [] };
-      } catch (err) {
-        return { success: false, results: [] };
-      }
-    }
-
-    function computeMinutes(departureTimeStr) {
-      const now = new Date();
-      const dep = new Date(departureTimeStr);
-      const diffMinutes = Math.round((dep - now) / 60000);
-      return diffMinutes < 0 ? 0 : diffMinutes;
-    }
-
-    function renderCard(badgeId, mainId, nextId, minutesArray, isLive) {
-      const badge = document.getElementById(badgeId);
-      const main = document.getElementById(mainId);
-      const next = document.getElementById(nextId);
-
-      if (isLive) {
-        badge.className = "badge-status live";
-        badge.querySelector(".status-text").innerText = "En direct";
-      } else {
-        badge.className = "badge-status";
-        badge.querySelector(".status-text").innerText = "Théorique";
-      }
-
-      if (minutesArray.length > 0) {
-        main.innerText = minutesArray[0] === 0 ? "Imminent" : minutesArray[0] + " min";
-        next.innerText = minutesArray.slice(1).map(m => m + " min").join(", ") || "--";
-      } else {
-        main.innerText = "-- min";
-        next.innerText = "--";
-      }
-    }
-
-    async function updateAllData() {
-      // BUS C6 - Coeur de Courrouze
-      const c6CoeurUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22C%C5%93ur%20de%20Courrouze%22&order_by=heurepassage%20ASC&limit=3";
-      const c6CoeurData = await fetchStopData(c6CoeurUrl);
-      
-      if (c6CoeurData.success && c6CoeurData.results.length > 0) {
-        const mins = c6CoeurData.results.map(r => computeMinutes(r.heurepassage));
-        renderCard("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", mins, true);
-      } else {
-        renderCard("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", [4, 12, 20], false);
-      }
-
-      // BUS C6 - Cité Judiciaire
-      const c6CiteUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22Cit%C3%A9%20Judiciaire%22&order_by=heurepassage%20ASC&limit=3";
-      const c6CiteData = await fetchStopData(c6CiteUrl);
-
-      if (c6CiteData.success && c6CiteData.results.length > 0) {
-        const mins = c6CiteData.results.map(r => computeMinutes(r.heurepassage));
-        renderCard("badge-c6-cite", "time-c6-cite", "next-c6-cite", mins, true);
-      } else {
-        renderCard("badge-c6-cite", "time-c6-cite", "next-
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timer);
+        return response;
+      } catch (e) {
+        clearTimeout(timer);
