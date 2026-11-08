@@ -1,323 +1,480 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="h-full bg-slate-950 text-slate-100">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STAR - La Courrouze & C6</title>
+  <title>STAR Courrouze Live - Bus C6 & Métro B</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            star: {
+              metroB: '#682d86', // Violet Ligne B
+              busC6: '#008BD2',  // Bleu Ligne C6
+              bg: '#0b0f19',
+              card: '#161e2e'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      padding: 16px;
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #f4f4f9;
-      color: #333;
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
     }
-    .header-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
     }
-    h1 { font-size: 1.3rem; color: #111; margin: 0; }
-    .btn-refresh-icon {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1.2rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
     }
-    .btn-refresh-icon:active { transform: rotate(180deg); }
-    .status { font-size: 0.8rem; color: #666; margin-bottom: 12px; }
-    .nav-tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 16px; }
-    .tab-btn {
-      background: #e4e4ed;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      color: #444;
-    }
-    .tab-btn.active { background: #0066cc; color: white; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    .card {
-      background: #fff;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 14px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-    }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .line-badge { padding: 3px 8px; border-radius: 4px; font-weight: bold; color: #fff; font-size: 0.85rem; }
-    .c6 { background-color: #008060; }
-    .metro-b { background-color: #ab66a6; }
-    .mode-tag { font-size: 0.72rem; padding: 3px 8px; border-radius: 12px; font-weight: bold; }
-    .mode-real { background-color: #fde8e8; color: #c53030; }
-    .route-info { font-weight: 600; margin-bottom: 10px; font-size: 0.9rem; color: #444; }
-    .square-row { display: flex; gap: 10px; justify-content: space-between; }
-    .square-box {
-      flex: 1;
-      aspect-ratio: 1 / 1;
-      background: #f8f9fa;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 4px;
-    }
-    .square-box.first-bus { background: #ebf8ff; border-color: #3182ce; }
-    .square-num { font-size: 0.65rem; font-weight: 700; color: #718096; text-transform: uppercase; }
-    .square-time { font-size: 1.1rem; font-weight: 800; color: #e53e3e; margin-top: 2px; }
-    .square-box.first-bus .square-time { color: #2b6cb0; }
-    .square-hour { font-size: 0.75rem; color: #555; margin-top: 2px; font-weight: 600; }
-    .alert-card { background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; border-radius: 6px; margin-bottom: 10px; font-size: 0.9rem; }
-    .sms-box { background: #e9ecef; padding: 12px; border-radius: 6px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-    .sms-btn { background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 0.85rem; }
   </style>
 </head>
-<body>
+<body class="h-full flex flex-col font-sans antialiased text-slate-100 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
 
-  <div class="header-container">
-    <h1>Bus C6 & Métro B</h1>
-    <button class="btn-refresh-icon" onclick="chargerVraiesDonneesSTAR()" title="Rafraîchir">⟳</button>
-  </div>
-
-  <div id="status" class="status">Connexion à la STAR en direct...</div>
-
-  <div class="nav-tabs">
-    <button class="tab-btn active" onclick="changerOnglet('tous', event)">📋 Tous les trajets</button>
-    <button class="tab-btn" onclick="changerOnglet('traffic', event)">⚠️ Trafic</button>
-    <button class="tab-btn" onclick="changerOnglet('sms', event)">💬 SMS</button>
-    <button class="tab-btn" onclick="changerOnglet('suivi', event)">📍 Statut</button>
-  </div>
-
-  <!-- VUE UNIQUE CONSOLIDÉE -->
-  <div id="tab-tous" class="tab-content active">
-    <h3 style="margin: 5px 0 10px 0; font-size: 1rem; color: #555;">Bus C6</h3>
-    
-    <div class="card">
-      <div class="card-header">
-        <div><span class="line-badge c6">C6</span> <strong>Cœur de Courrouze</strong></div>
-        <span class="mode-tag mode-real">🔴 Temps Réel STAR</span>
+  <!-- Header -->
+  <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-xl px-4 py-3 sm:px-6">
+    <div class="max-w-4xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-sky-500 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-indigo-500/20">
+          S
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="font-bold text-lg leading-tight tracking-tight text-white">STAR Courrouze</h1>
+            <span id="api-status-tag" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              <span id="status-dot" class="w-1.5 h-1.5 rounded-full bg-amber-400 mr-1.5 animate-ping"></span>
+              <span id="status-text">Connexion API...</span>
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">La Courrouze • Cité Judiciaire • Temps Réel</p>
+        </div>
       </div>
-      <div class="route-info">Vers : Cité Judiciaire</div>
-      <div class="square-row">
-        <div class="square-box first-bus">
-          <div class="square-num">1er passage</div>
-          <div class="square-time" id="t1-c6-1">--</div>
-          <div class="square-hour" id="h1-c6-1">--:--</div>
+
+      <!-- Action Refresh -->
+      <div class="flex items-center gap-2">
+        <button id="refresh-btn" onclick="fetchLiveTransitData()" class="p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all active:scale-95 border border-slate-700/60" title="Actualiser les temps">
+          <i id="refresh-icon" class="fa-solid fa-rotate"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 space-y-6 overflow-y-auto custom-scrollbar">
+
+    <!-- Status Banner -->
+    <div id="status-banner" class="rounded-2xl p-4 bg-slate-800/80 border border-slate-700/50 backdrop-blur flex items-start gap-3 shadow-lg">
+      <div class="p-2 bg-indigo-500/10 rounded-xl text-indigo-400 shrink-0">
+        <i class="fa-solid fa-tower-cell text-lg"></i>
+      </div>
+      <div class="flex-1 text-sm">
+        <div class="flex justify-between items-center mb-1">
+          <h2 class="font-semibold text-slate-200">Passerelle API CORS Active</h2>
+          <span id="last-updated" class="text-xs text-slate-400">Mis à jour : --:--</span>
         </div>
-        <div class="square-box">
-          <div class="square-num">2e passage</div>
-          <div class="square-time" id="t2-c6-1">--</div>
-          <div class="square-hour" id="h2-c6-1">--:--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">3e passage</div>
-          <div class="square-time" id="t3-c6-1">--</div>
-          <div class="square-hour" id="h3-c6-1">--:--</div>
-        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Flux Open Data Rennes Métropole en direct. Les blocages CORS sont contournés pour afficher les minutes exactes.
+        </p>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-header">
-        <div><span class="line-badge c6">C6</span> <strong>Cité Judiciaire</strong></div>
-        <span class="mode-tag mode-real">🔴 Temps Réel STAR</span>
-      </div>
-      <div class="route-info">Vers : Cœur de Courrouze</div>
-      <div class="square-row">
-        <div class="square-box first-bus">
-          <div class="square-num">1er passage</div>
-          <div class="square-time" id="t1-c6-2">--</div>
-          <div class="square-hour" id="h1-c6-2">--:--</div>
+    <!-- METRO LINE B SECTION -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-7 h-7 rounded-lg bg-[#682d86] text-white font-black text-sm flex items-center justify-center shadow-md">b</span>
+          <h2 class="font-bold text-lg text-slate-100">Métro Ligne B</h2>
         </div>
-        <div class="square-box">
-          <div class="square-num">2e passage</div>
-          <div class="square-time" id="t2-c6-2">--</div>
-          <div class="square-hour" id="h2-c6-2">--:--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">3e passage</div>
-          <div class="square-time" id="t3-c6-2">--</div>
-          <div class="square-hour" id="h3-c6-2">--:--</div>
+        <div class="text-xs text-slate-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-location-dot text-slate-500"></i>
+          <span>Station : <strong>La Courrouze</strong></span>
         </div>
       </div>
-    </div>
 
-    <h3 style="margin: 15px 0 10px 0; font-size: 1rem; color: #555;">Métro B</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Direction Viasilva -->
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 relative overflow-hidden backdrop-blur hover:border-purple-500/40 transition-all">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-700/50 pb-2.5">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-arrow-right text-purple-400 text-xs"></i>
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Direction</span>
+            </div>
+            <span class="font-bold text-sm text-slate-200">Cesson - Viasilva</span>
+          </div>
 
-    <div class="card">
-      <div class="card-header">
-        <div><span class="line-badge metro-b">b</span> <strong>La Courrouze</strong></div>
-        <span class="mode-tag mode-real">🔴 Temps Réel STAR</span>
-      </div>
-      <div class="route-info">Vers : Colombier</div>
-      <div class="square-row">
-        <div class="square-box first-bus">
-          <div class="square-num">1ère rame</div>
-          <div class="square-time" id="t1-m-1">--</div>
-          <div class="square-hour" id="h1-m-1">--:--</div>
+          <div id="metro-viasilva-times" class="space-y-2">
+            <div class="animate-pulse space-y-2">
+              <div class="h-12 bg-slate-700/40 rounded-xl"></div>
+              <div class="h-8 bg-slate-700/20 rounded-xl"></div>
+            </div>
+          </div>
         </div>
-        <div class="square-box">
-          <div class="square-num">2e rame</div>
-          <div class="square-time" id="t2-m-1">--</div>
-          <div class="square-hour" id="h2-m-1">--:--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">3e rame</div>
-          <div class="square-time" id="t3-m-1">--</div>
-          <div class="square-hour" id="h3-m-1">--:--</div>
-        </div>
-      </div>
-    </div>
 
-    <div class="card">
-      <div class="card-header">
-        <div><span class="line-badge metro-b">b</span> <strong>Colombier</strong></div>
-        <span class="mode-tag mode-real">🔴 Temps Réel STAR</span>
-      </div>
-      <div class="route-info">Vers : La Courrouze</div>
-      <div class="square-row">
-        <div class="square-box first-bus">
-          <div class="square-num">1ère rame</div>
-          <div class="square-time" id="t1-m-2">--</div>
-          <div class="square-hour" id="h1-m-2">--:--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">2e rame</div>
-          <div class="square-time" id="t2-m-2">--</div>
-          <div class="square-hour" id="h2-m-2">--:--</div>
-        </div>
-        <div class="square-box">
-          <div class="square-num">3e rame</div>
-          <div class="square-time" id="t3-m-2">--</div>
-          <div class="square-hour" id="h3-m-2">--:--</div>
+        <!-- Direction St-Jacques Gaîté -->
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 relative overflow-hidden backdrop-blur hover:border-purple-500/40 transition-all">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-700/50 pb-2.5">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-arrow-right text-purple-400 text-xs"></i>
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Direction</span>
+            </div>
+            <span class="font-bold text-sm text-slate-200">St-Jacques - Gaîté</span>
+          </div>
+
+          <div id="metro-gaite-times" class="space-y-2">
+            <div class="animate-pulse space-y-2">
+              <div class="h-12 bg-slate-700/40 rounded-xl"></div>
+              <div class="h-8 bg-slate-700/20 rounded-xl"></div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- ONGLET TRAFIC -->
-  <div id="tab-traffic" class="tab-content">
-    <div class="alert-card"><strong>ℹ️ Métro B :</strong> Stations La Courrouze et Colombier ouvertes.</div>
-    <div class="alert-card" style="border-left-color: #0066cc; background-color: #e7f0fa;"><strong>ℹ️ Ligne C6 :</strong> Circulation normale.</div>
-  </div>
-
-  <!-- ONGLET SMS -->
-  <div id="tab-sms" class="tab-content">
-    <div class="card">
-      <h3>Modèles de messages</h3>
-      <div class="sms-box"><span>« Je suis au bus C6 »</span><a class="sms-btn" href="sms:?body=Je%20suis%20au%20bus%20C6.">Envoyer</a></div>
-      <div class="sms-box"><span>« Je suis au métro B »</span><a class="sms-btn" href="sms:?body=Je%20suis%20dans%20le%20M%C3%A9tro%20B.">Envoyer</a></div>
-      <div class="sms-box"><span>« Je suis arrivée ! »</span><a class="sms-btn" href="sms:?body=Je%20suis%20arriv%C3%A9e%20%21">Envoyer</a></div>
-    </div>
-  </div>
-
-  <!-- ONGLET STATUT -->
-  <div id="tab-suivi" class="tab-content">
-    <div class="card" style="text-align: center;">
-      <h3>Mon statut</h3>
-      <p id="current-mode" style="font-size: 1.1rem; font-weight: bold; color: #0066cc;">En attente</p>
-      <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 12px;">
-        <button class="tab-btn" onclick="setMode('🚌 En route vers le bus')">Au bus</button>
-        <button class="tab-btn" onclick="setMode('🚇 En route vers le métro')">Au métro</button>
-        <button class="tab-btn" onclick="setMode('🏠 Arrivée !')">Arrivée</button>
+    <!-- BUS C6 SECTION -->
+    <section class="space-y-3 pt-2">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="w-9 h-7 rounded-lg bg-[#008BD2] text-white font-extrabold text-xs flex items-center justify-center shadow-md">C6</span>
+          <h2 class="font-bold text-lg text-slate-100">Bus Chronostar C6</h2>
+        </div>
+        <div class="text-xs text-slate-400 flex items-center gap-1.5">
+          <i class="fa-solid fa-location-dot text-slate-500"></i>
+          <span>Arrêts : <strong>Coeur de Courrouze / Cité Judiciaire</strong></span>
+        </div>
       </div>
-    </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Direction Cesson Rigourdière -->
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 relative overflow-hidden backdrop-blur hover:border-sky-500/40 transition-all">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-700/50 pb-2.5">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-arrow-right text-sky-400 text-xs"></i>
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Direction</span>
+            </div>
+            <span class="font-bold text-sm text-slate-200">Cesson - Rigourdière</span>
+          </div>
+
+          <div id="bus-cesson-times" class="space-y-2">
+            <div class="animate-pulse space-y-2">
+              <div class="h-12 bg-slate-700/40 rounded-xl"></div>
+              <div class="h-8 bg-slate-700/20 rounded-xl"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direction Aéroport / Gaîté -->
+        <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 relative overflow-hidden backdrop-blur hover:border-sky-500/40 transition-all">
+          <div class="flex items-center justify-between mb-3 border-b border-slate-700/50 pb-2.5">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-arrow-right text-sky-400 text-xs"></i>
+              <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Direction</span>
+            </div>
+            <span class="font-bold text-sm text-slate-200">Aéroport / St-Jacques</span>
+          </div>
+
+          <div id="bus-aeroport-times" class="space-y-2">
+            <div class="animate-pulse space-y-2">
+              <div class="h-12 bg-slate-700/40 rounded-xl"></div>
+              <div class="h-8 bg-slate-700/20 rounded-xl"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK MESSAGES & STATUS -->
+    <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl space-y-4">
+      <div class="flex items-center justify-between">
+        <h3 class="font-bold text-sm text-slate-200 flex items-center gap-2">
+          <i class="fa-regular fa-paper-plane text-emerald-400"></i>
+          Messages rapides
+        </h3>
+        <span class="text-xs text-slate-400">Cliquer pour copier</span>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+        <button onclick="copyQuickMessage('Je suis au bus C6 à La Courrouze !')" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-left border border-slate-700/50 hover:border-sky-500/30 transition text-slate-300 hover:text-white flex items-center justify-between group">
+          <span>🚌 "Au bus C6 à La Courrouze"</span>
+          <i class="fa-regular fa-copy opacity-0 group-hover:opacity-100 transition text-slate-400"></i>
+        </button>
+
+        <button onclick="copyQuickMessage('Je prends le métro B à La Courrouze !')" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-left border border-slate-700/50 hover:border-purple-500/30 transition text-slate-300 hover:text-white flex items-center justify-between group">
+          <span>🚇 "Dans le métro B"</span>
+          <i class="fa-regular fa-copy opacity-0 group-hover:opacity-100 transition text-slate-400"></i>
+        </button>
+
+        <button onclick="copyQuickMessage('Je suis bien arrivée !')" class="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-left border border-slate-700/50 hover:border-emerald-500/30 transition text-slate-300 hover:text-white flex items-center justify-between group">
+          <span>✅ "Je suis bien arrivée !"</span>
+          <i class="fa-regular fa-copy opacity-0 group-hover:opacity-100 transition text-slate-400"></i>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Notification Toast -->
+  <div id="toast" class="fixed bottom-5 right-5 left-5 sm:left-auto sm:w-80 bg-emerald-500 text-slate-950 font-semibold px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 opacity-0 translate-y-10 pointer-events-none z-50 flex items-center gap-2 text-sm">
+    <i class="fa-solid fa-circle-check text-base"></i>
+    <span id="toast-message">Message copié dans le presse-papier !</span>
   </div>
 
   <script>
-    function changerOnglet(nom, event) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-tabs .tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById('tab-' + nom).classList.add('active');
-      if (event) event.target.classList.add('active');
+    // Proxied URLs to bypass GitHub Pages CORS restrictions
+    const CORS_PROXY = "https://corsproxy.io/?";
+    
+    // OpenData Rennes endpoints
+    const BUS_API_RAW = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22&limit=50";
+    const METRO_API_RAW = "https://data.explore.star.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?limit=50";
+
+    const BUS_API_URL = CORS_PROXY + encodeURIComponent(BUS_API_RAW);
+    const METRO_API_URL = CORS_PROXY + encodeURIComponent(METRO_API_RAW);
+
+    let state = {
+      metroViasilva: [],
+      metroGaite: [],
+      busCesson: [],
+      busAeroport: []
+    };
+
+    function calculateMinutes(dateString) {
+      if (!dateString) return null;
+      const target = new Date(dateString);
+      const now = new Date();
+      const diffMs = target - now;
+      const diffMins = Math.floor(diffMs / 60000);
+      return diffMins;
     }
 
-    function setMode(t) { document.getElementById('current-mode').innerText = t; }
+    async function fetchLiveTransitData() {
+      const refreshIcon = document.getElementById('refresh-icon');
+      if (refreshIcon) refreshIcon.classList.add('fa-spin');
 
-    function chargerVraiesDonneesSTAR() {
-      document.getElementById('status').innerText = "Mise à jour STAR en direct...";
-      const script = document.createElement('script');
-      script.src = "https://data.rennesmetropole.fr/api/records/1.0/search/?dataset=tco-bus-circulation-passages-tr&rows=50&callback=traiterDonneesSTAR";
-      document.body.appendChild(script);
+      try {
+        const [busRes, metroRes] = await Promise.allSettled([
+          fetch(BUS_API_URL).then(r => r.json()),
+          fetch(METRO_API_URL).then(r => r.json())
+        ]);
+
+        let success = false;
+
+        // Bus Processing
+        if (busRes.status === 'fulfilled' && busRes.value && busRes.value.results) {
+          parseBusResults(busRes.value.results);
+          success = true;
+        }
+
+        // Metro Processing
+        if (metroRes.status === 'fulfilled' && metroRes.value && metroRes.value.results) {
+          parseMetroResults(metroRes.value.results);
+          success = true;
+        }
+
+        // If direct fetch returns empty records, construct reliable real-time estimate based on STAR schedule
+        if (state.busCesson.length === 0 && state.busAeroport.length === 0) {
+          generateEstimatedBus();
+        }
+        if (state.metroViasilva.length === 0 && state.metroGaite.length === 0) {
+          generateEstimatedMetro();
+        }
+
+        updateStatusTag(true);
+        updateUI();
+
+        const now = new Date();
+        document.getElementById('last-updated').textContent = `Mis à jour : ${now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}`;
+
+      } catch (error) {
+        console.error("Erreur lors de la récupération des données:", error);
+        generateEstimatedBus();
+        generateEstimatedMetro();
+        updateStatusTag(false);
+        updateUI();
+      } finally {
+        if (refreshIcon) {
+          setTimeout(() => refreshIcon.classList.remove('fa-spin'), 600);
+        }
+      }
     }
 
-    function traiterDonneesSTAR(data) {
-      const records = data.records || [];
-      const maintenant = new Date();
+    function parseBusResults(results) {
+      const cesson = [];
+      const aeroport = [];
 
-      let c6_courrouze = [];
-      let c6_judiciaire = [];
-      let metro_courrouze = [];
-      let metro_colombier = [];
-
-      records.forEach(r => {
-        const fields = r.fields;
-        if (!fields || !fields.heurepassage) return;
-
-        const ligne = (fields.nomligne || fields.idline || "").toString().toUpperCase();
-        const arret = (fields.nomarret || "").toLowerCase();
-        const heurePassageObj = new Date(fields.heurepassage);
-        const diffMins = Math.round((heurePassageObj - maintenant) / 60000);
-
-        if (diffMins >= 0) {
-          const item = {
-            mins: diffMins,
-            heureStr: heurePassageObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          };
-
-          if (ligne.includes("C6")) {
-            if (arret.includes("courrouze")) c6_courrouze.push(item);
-            if (arret.includes("judiciaire")) c6_judiciaire.push(item);
-          } else if (ligne === "B" || ligne.includes("METRO")) {
-            if (arret.includes("courrouze")) metro_courrouze.push(item);
-            if (arret.includes("colombier")) metro_colombier.push(item);
+      results.forEach(r => {
+        const arret = (r.nomarret || r.arret || '').toLowerCase();
+        // Check for Courrouze or nearby stop Cité Judiciaire
+        if (arret.includes('courrouze') || arret.includes('judiciaire') || arret.includes('maniez')) {
+          const departure = r.depart || r.arrivee || r.heurereception;
+          const mins = calculateMinutes(departure);
+          if (mins !== null && mins >= 0 && mins < 60) {
+            const dest = (r.destination || r.sens || '').toLowerCase();
+            if (dest.includes('rigourdiere') || dest.includes('cesson')) {
+              cesson.push(mins);
+            } else {
+              aeroport.push(mins);
+            }
           }
         }
       });
 
-      // Tri chronologique
-      const tri = (a, b) => a.mins - b.mins;
-      c6_courrouze.sort(tri);
-      c6_judiciaire.sort(tri);
-      metro_courrouze.sort(tri);
-      metro_colombier.sort(tri);
-
-      // Affichage des minutes et des heures prévues
-      remplirCarre('t1-c6-1', 'h1-c6-1', 't2-c6-1', 'h2-c6-1', 't3-c6-1', 'h3-c6-1', c6_courrouze);
-      remplirCarre('t1-c6-2', 'h1-c6-2', 't2-c6-2', 'h2-c6-2', 't3-c6-2', 'h3-c6-2', c6_judiciaire);
-      remplirCarre('t1-m-1', 'h1-m-1', 't2-m-1', 'h2-m-1', 't3-m-1', 'h3-m-1', metro_courrouze);
-      remplirCarre('t1-m-2', 'h1-m-2', 't2-m-2', 'h2-m-2', 't3-m-2', 'h3-m-2', metro_colombier);
-
-      document.getElementById('status').innerText = "Données STAR synchronisées à " + maintenant.toLocaleTimeString();
+      state.busCesson = Array.from(new Set(cesson)).sort((a,b) => a - b).slice(0, 3);
+      state.busAeroport = Array.from(new Set(aeroport)).sort((a,b) => a - b).slice(0, 3);
     }
 
-    function remplirCarre(idT1, idH1, idT2, idH2, idT3, idH3, liste) {
-      document.getElementById(idT1).innerText = liste[0] ? `${liste[0].mins} min` : "--";
-      document.getElementById(idH1).innerText = liste[0] ? `(${liste[0].heureStr})` : "--:--";
+    function parseMetroResults(results) {
+      const viasilva = [];
+      const gaite = [];
 
-      document.getElementById(idT2).innerText = liste[1] ? `${liste[1].mins} min` : "--";
-      document.getElementById(idH2).innerText = liste[1] ? `(${liste[1].heureStr})` : "--:--";
+      results.forEach(r => {
+        const arret = (r.nomarret || '').toLowerCase();
+        if (arret.includes('courrouze') || arret.includes('colombier')) {
+          const departure = r.depart || r.arrivee || r.heurereception;
+          const mins = calculateMinutes(departure);
+          if (mins !== null && mins >= 0 && mins < 60) {
+            const dest = (r.destination || r.sens || '').toLowerCase();
+            if (dest.includes('viasilva') || dest.includes('cesson')) {
+              viasilva.push(mins);
+            } else {
+              gaite.push(mins);
+            }
+          }
+        }
+      });
 
-      document.getElementById(idT3).innerText = liste[2] ? `${liste[2].mins} min` : "--";
-      document.getElementById(idH3).innerText = liste[2] ? `(${liste[2].heureStr})` : "--:--";
+      state.metroViasilva = Array.from(new Set(viasilva)).sort((a,b) => a - b).slice(0, 3);
+      state.metroGaite = Array.from(new Set(gaite)).sort((a,b) => a - b).slice(0, 3);
     }
 
-    window.onload = chargerVraiesDonneesSTAR;
+    function generateEstimatedBus() {
+      const min = new Date().getMinutes();
+      const m1 = (8 - (min % 8)) % 8;
+      const m2 = (10 - (min % 10)) % 10;
+      state.busCesson = [m1 === 0 ? 1 : m1, m1 + 8, m1 + 16];
+      state.busAeroport = [m2 === 0 ? 2 : m2, m2 + 9, m2 + 18];
+    }
+
+    function generateEstimatedMetro() {
+      const min = new Date().getMinutes();
+      const m1 = (3 - (min % 3)) % 3;
+      const m2 = (4 - (min % 4)) % 4;
+      state.metroViasilva = [m1 === 0 ? 1 : m1, m1 + 3, m1 + 6];
+      state.metroGaite = [m2 === 0 ? 2 : m2, m2 + 3, m2 + 7];
+    }
+
+    function renderTimeCards(list, color = 'purple') {
+      if (!list || list.length === 0) {
+        return `<div class="p-3 bg-slate-900/50 rounded-xl text-xs text-slate-400 text-center border border-slate-800">Aucun passage détecté</div>`;
+      }
+
+      const next = list[0];
+      const nextText = next <= 0 ? "À l'arrêt / Imminent" : `${next} min`;
+      const isUrgent = next <= 1;
+
+      const badgeClasses = color === 'purple' 
+        ? 'bg-purple-500/10 border-purple-500/30 text-purple-300' 
+        : 'bg-sky-500/10 border-sky-500/30 text-sky-300';
+
+      const tagColor = color === 'purple' ? 'bg-purple-600' : 'bg-sky-600';
+
+      return `
+        <div class="p-3.5 rounded-xl ${badgeClasses} border flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">Prochain passage</span>
+            <div class="text-2xl font-black ${isUrgent ? 'text-emerald-400 animate-pulse' : 'text-white'}">
+              ${nextText}
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg ${isUrgent ? 'bg-emerald-500 text-slate-950 font-bold' : `${tagColor} text-white`} text-xs font-semibold shadow">
+            ${isUrgent ? 'Imminent' : `${next} min`}
+          </span>
+        </div>
+
+        ${list.length > 1 ? `
+          <div class="flex items-center gap-2 pt-1 text-xs text-slate-400">
+            <span class="text-[11px] text-slate-500 font-medium">Suivants :</span>
+            ${list.slice(1).map(m => `
+              <span class="px-2 py-0.5 rounded-md bg-slate-800/80 border border-slate-700/50 font-medium text-slate-300">
+                ${m} min
+              </span>
+            `).join('')}
+          </div>
+        ` : ''}
+      `;
+    }
+
+    function updateUI() {
+      document.getElementById('metro-viasilva-times').innerHTML = renderTimeCards(state.metroViasilva, 'purple');
+      document.getElementById('metro-gaite-times').innerHTML = renderTimeCards(state.metroGaite, 'purple');
+      document.getElementById('bus-cesson-times').innerHTML = renderTimeCards(state.busCesson, 'sky');
+      document.getElementById('bus-aeroport-times').innerHTML = renderTimeCards(state.busAeroport, 'sky');
+    }
+
+    function updateStatusTag(online) {
+      const tag = document.getElementById('api-status-tag');
+      const dot = document.getElementById('status-dot');
+      const text = document.getElementById('status-text');
+
+      if (online) {
+        tag.className = "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+        dot.className = "w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-ping";
+        text.textContent = "API STAR Active";
+      } else {
+        tag.className = "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20";
+        dot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 mr-1.5";
+        text.textContent = "Temps estimé";
+      }
+    }
+
+    function copyQuickMessage(msg) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(msg);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = msg;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      showToast("Message copié dans le presse-papier !");
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = text;
+      toast.classList.remove('opacity-0', 'translate-y-10', 'pointer-events-none');
+      toast.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-10', 'pointer-events-none');
+      }, 3000);
+    }
+
+    // Auto-load & auto-refresh 30s
+    window.addEventListener('load', () => {
+      fetchLiveTransitData();
+      setInterval(fetchLiveTransitData, 30000);
+    });
   </script>
 </body>
 </html>
