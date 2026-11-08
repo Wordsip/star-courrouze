@@ -45,10 +45,7 @@
       align-items: center;
       gap: 8px;
       font-size: 0.9rem;
-      transition: background 0.2s;
     }
-
-    .btn-refresh:hover { background: #1e293b; }
 
     .section-title {
       font-size: 1.2rem;
@@ -121,7 +118,6 @@
       font-size: 2rem;
       font-weight: 800;
       margin: 14px 0;
-      letter-spacing: -0.5px;
     }
 
     .main-time span {
@@ -162,9 +158,6 @@
       font-size: 0.95rem;
       font-weight: 600;
       text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
     }
   </style>
 </head>
@@ -184,7 +177,7 @@
           <div class="direction-sub">Vers Cesson-Rigourdière</div>
         </div>
         <div id="badge-c6-coeur" class="badge-status">
-          <span class="dot"></span><span class="status-text">Chargement...</span>
+          <span class="dot"></span><span class="status-text">Recherche...</span>
         </div>
       </div>
       <div id="time-c6-coeur" class="main-time">--:--</div>
@@ -198,7 +191,7 @@
           <div class="direction-sub">Vers Aéroport / St-Jacques</div>
         </div>
         <div id="badge-c6-cite" class="badge-status">
-          <span class="dot"></span><span class="status-text">Chargement...</span>
+          <span class="dot"></span><span class="status-text">Recherche...</span>
         </div>
       </div>
       <div id="time-c6-cite" class="main-time">--:--</div>
@@ -215,7 +208,7 @@
           <div class="direction-sub">Vers Cesson - Viasilva</div>
         </div>
         <div id="badge-mb-courrouze" class="badge-status">
-          <span class="dot"></span><span class="status-text">Chargement...</span>
+          <span class="dot"></span><span class="status-text">Recherche...</span>
         </div>
       </div>
       <div id="time-mb-courrouze" class="main-time">--:--</div>
@@ -229,7 +222,7 @@
           <div class="direction-sub">Vers St-Jacques - Gaîté</div>
         </div>
         <div id="badge-mb-colombier" class="badge-status">
-          <span class="dot"></span><span class="status-text">Chargement...</span>
+          <span class="dot"></span><span class="status-text">Recherche...</span>
         </div>
       </div>
       <div id="time-mb-colombier" class="main-time">--:--</div>
@@ -249,80 +242,84 @@
   <script>
     const WORKER_URL = "https://smalstar-proxy.godziuno.workers.dev";
 
-    async function fetchStopData(apiUrl) {
+    async function fetchFromSTAR(endpoint) {
       try {
-        const url = WORKER_URL + "/?url=" + encodeURIComponent(apiUrl);
-        const res = await fetch(url);
+        const fullUrl = `${WORKER_URL}/?url=${encodeURIComponent(endpoint)}`;
+        const res = await fetch(fullUrl);
         if (res.ok) {
           const json = await res.json();
           return json.results || json.records || [];
         }
       } catch (e) {
-        console.error("Erreur API:", e);
+        console.error("Erreur réseau API:", e);
       }
       return [];
     }
 
-    function parseTime(isoStr) {
-      if (!isoStr) return null;
-      const dep = new Date(isoStr);
+    function processPassage(dateStr) {
+      if (!dateStr) return null;
+      const depDate = new Date(dateStr);
       const now = new Date();
-      const diffMin = Math.round((dep - now) / 60000);
-      const formattedTime = dep.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const diffMin = Math.round((depDate - now) / 60000);
+      const formattedTime = depDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       return {
         time: formattedTime,
         minutes: diffMin < 0 ? 0 : diffMin
       };
     }
 
-    function updateCard(badgeId, mainId, nextId, records) {
+    function renderStop(badgeId, mainId, nextId, rawRecords) {
       const badge = document.getElementById(badgeId);
       const main = document.getElementById(mainId);
       const next = document.getElementById(nextId);
 
-      if (!badge || !main || !next) return;
+      const passages = rawRecords
+        .map(r => processPassage(r.heurepassage || r.heurerealisee || (r.fields && r.fields.heurepassage)))
+        .filter(p => p && p.minutes >= 0)
+        .sort((a, b) => a.minutes - b.minutes);
 
-      const items = records
-        .map(r => parseTime(r.heurerealisee || r.heurepassage))
-        .filter(Boolean);
-
-      if (items.length > 0) {
+      if (passages.length > 0) {
         badge.className = "badge-status live";
-        badge.querySelector(".status-text").innerText = "En direct (GPS)";
+        badge.querySelector(".status-text").innerText = "En direct";
 
-        const first = items[0];
+        const first = passages[0];
         const minStr = first.minutes === 0 ? "Imminent" : `${first.minutes} min`;
         main.innerHTML = `${first.time} <span>(${minStr})</span>`;
 
-        if (items.length > 1) {
-          next.innerText = items.slice(1).map(i => `${i.time} (${i.minutes} min)`).join(", ");
+        if (passages.length > 1) {
+          next.innerText = passages.slice(1).map(p => `${p.time} (${p.minutes} min)`).join(", ");
         } else {
           next.innerText = "--";
         }
       } else {
         badge.className = "badge-status";
-        badge.querySelector(".status-text").innerText = "Aucun bus";
+        badge.querySelector(".status-text").innerText = "Aucun passage";
         main.innerText = "--:--";
         next.innerText = "--";
       }
     }
 
     async function updateAllData() {
-      // 1. Bus C6 - Cœur de Courrouze (Vers Cesson-Rigourdière, id arret / nom exact)
-      const c6Coeur = await fetchStopData("https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22C%C5%93ur%20de%20Courrouze%22&order_by=heurepassage%20ASC&limit=3");
-      updateCard("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", c6Coeur);
+      // Requetes directes sur le dataset de Rennes Metropole v2.1
+      const c6CoeurUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?limit=10&where=nomcourtligne%3D%22C6%22";
+      const c6Data = await fetchFromSTAR(c6CoeurUrl);
+      
+      // Filtrage côté client pour éviter tout blocage d'encodage d'accents par l'API
+      const coeurRecords = c6Data.filter(r => (r.nomarret || "").toLowerCase().includes("courrouze"));
+      const citeRecords = c6Data.filter(r => (r.nomarret || "").toLowerCase().includes("judiciaire"));
 
-      // 2. Bus C6 - Cité Judiciaire
-      const c6Cite = await fetchStopData("https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22Cit%C3%A9%20Judiciaire%22&order_by=heurepassage%20ASC&limit=3");
-      updateCard("badge-c6-cite", "time-c6-cite", "next-c6-cite", c6Cite);
+      renderStop("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", coeurRecords);
+      renderStop("badge-c6-cite", "time-c6-cite", "next-c6-cite", citeRecords);
 
-      // 3. Métro B - La Courrouze
-      const mbCourrouze = await fetchStopData("https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation%3D%22La%20Courrouze%22&limit=3");
-      updateCard("badge-mb-courrouze", "time-mb-courrouze", "next-mb-courrouze", mbCourrouze);
+      // Metro B
+      const metroUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?limit=20";
+      const metroData = await fetchFromSTAR(metroUrl);
 
-      // 4. Métro B - Colombier
-      const mbColombier = await fetchStopData("https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation%3D%22Colombier%22&limit=3");
-      updateCard("badge-mb-colombier", "time-mb-colombier", "next-mb-colombier", mbColombier);
+      const courrouzeMetro = metroData.filter(r => (r.nomstation || "").toLowerCase().includes("courrouze"));
+      const colombierMetro = metroData.filter(r => (r.nomstation || "").toLowerCase().includes("colombier"));
+
+      renderStop("badge-mb-courrouze", "time-mb-courrouze", "next-mb-courrouze", courrouzeMetro);
+      renderStop("badge-mb-colombier", "time-mb-colombier", "next-mb-colombier", colombierMetro);
     }
 
     updateAllData();
