@@ -198,11 +198,26 @@
 
   <script>
     const WORKER_URL = "https://smalstar-proxy.godziuno.workers.dev";
+    const FALLBACK_PROXY = "https://api.allorigins.win/raw?url=";
+
+    async function fetchWithTimeout(url, timeout = 2500) {
+      const controller = new AbortController();
+      const id = setTimeout(function() { controller.abort(); }, timeout);
+      try {
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(id);
+        return response;
+      } catch (e) {
+        clearTimeout(id);
+        throw e;
+      }
+    }
 
     async function fetchStopData(targetUrl) {
+      // 1. Tentative via Cloudflare Worker
       try {
-        const fullUrl = WORKER_URL + "/?url=" + encodeURIComponent(targetUrl);
-        const res = await fetch(fullUrl);
+        const workerFullUrl = WORKER_URL + "/?url=" + encodeURIComponent(targetUrl);
+        const res = await fetchWithTimeout(workerFullUrl, 2500);
         if (res.ok) {
           const data = await res.json();
           if (data && data.results && data.results.length > 0) {
@@ -210,8 +225,23 @@
           }
         }
       } catch (e) {
-        console.error("Erreur de récupération via Worker:", e);
+        console.warn("Échec du Worker, passage au proxy de secours...", e);
       }
+
+      // 2. Tentative via le proxy de secours
+      try {
+        const fallbackUrl = FALLBACK_PROXY + encodeURIComponent(targetUrl);
+        const res = await fetchWithTimeout(fallbackUrl, 3000);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.results && data.results.length > 0) {
+            return { success: true, results: data.results };
+          }
+        }
+      } catch (e) {
+        console.error("Échec des requêtes de données:", e);
+      }
+
       return { success: false, results: [] };
     }
 
@@ -258,4 +288,38 @@
       }
 
       // BUS C6 - Cité Judiciaire
-      const c6CiteUrl = "
+      const c6CiteUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22Cit%C3%A9%20Judiciaire%22&order_by=heurepassage%20ASC&limit=3";
+      const c6CiteData = await fetchStopData(c6CiteUrl);
+      if (c6CiteData.success) {
+        const mins = c6CiteData.results.map(function(r) { return computeMinutes(r.heurepassage); });
+        renderCard("badge-c6-cite", "time-c6-cite", "next-c6-cite", mins, true);
+      } else {
+        renderCard("badge-c6-cite", "time-c6-cite", "next-c6-cite", [2, 9, 17], false);
+      }
+
+      // MÉTRO B - La Courrouze
+      const mbCourrouzeUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation%3D%22La%20Courrouze%22&limit=3";
+      const mbCourrouzeData = await fetchStopData(mbCourrouzeUrl);
+      if (mbCourrouzeData.success) {
+        const mins = mbCourrouzeData.results.map(function(r) { return computeMinutes(r.heurepassage); }).sort(function(a,b){ return a-b; });
+        renderCard("badge-mb-courrouze", "time-mb-courrouze", "next-mb-courrouze", mins, true);
+      } else {
+        renderCard("badge-mb-courrouze", "time-mb-courrouze", "next-mb-courrouze", [2, 5, 8], false);
+      }
+
+      // MÉTRO B - Colombier
+      const mbColombierUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation%3D%22Colombier%22&limit=3";
+      const mbColombierData = await fetchStopData(mbColombierUrl);
+      if (mbColombierData.success) {
+        const mins = mbColombierData.results.map(function(r) { return computeMinutes(r.heurepassage); }).sort(function(a,b){ return a-b; });
+        renderCard("badge-mb-colombier", "time-mb-colombier", "next-mb-colombier", mins, true);
+      } else {
+        renderCard("badge-mb-colombier", "time-mb-colombier", "next-mb-colombier", [1, 4, 7], false);
+      }
+    }
+
+    updateAllData();
+    setInterval(updateAllData, 30000);
+  </script>
+</body>
+</html>
