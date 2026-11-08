@@ -92,4 +92,170 @@
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background-color: var(--text
+      background-color: var(--text-muted);
+    }
+
+    .live .dot {
+      background-color: var(--live-green);
+      box-shadow: 0 0 8px var(--live-green);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+
+    .main-time {
+      font-size: 2rem;
+      font-weight: 800;
+      margin: 12px 0;
+    }
+
+    .next-times {
+      display: flex;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .time-chip {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>STAR Courrouze</h1>
+    <button class="btn-refresh" onclick="updateAllData()">🔄 Actualiser</button>
+  </header>
+
+  <div class="section-title">🚌 Bus C6</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="stop-name">Cœur de Courrouze</div>
+          <div class="direction-sub">Vers Cesson-Rigourdière</div>
+        </div>
+        <div id="badge-c6-coeur" class="badge-status">
+          <span class="dot"></span><span class="status-text">Chargement...</span>
+        </div>
+      </div>
+      <div id="time-c6-coeur" class="main-time">-- min</div>
+      <div class="next-times">Suivants : <span id="next-c6-coeur" class="time-chip">--</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="stop-name">Cité Judiciaire</div>
+          <div class="direction-sub">Vers Aéroport / St-Jacques</div>
+        </div>
+        <div id="badge-c6-cite" class="badge-status">
+          <span class="dot"></span><span class="status-text">Chargement...</span>
+        </div>
+      </div>
+      <div id="time-c6-cite" class="main-time">-- min</div>
+      <div class="next-times">Suivants : <span id="next-c6-cite" class="time-chip">--</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">🚇 Métro B</div>
+  <div class="grid">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="stop-name">La Courrouze</div>
+          <div class="direction-sub">Vers Cesson - Viasilva</div>
+        </div>
+        <div id="badge-mb-courrouze" class="badge-status">
+          <span class="dot"></span><span class="status-text">Chargement...</span>
+        </div>
+      </div>
+      <div id="time-mb-courrouze" class="main-time">-- min</div>
+      <div class="next-times">Suivants : <span id="next-mb-courrouze" class="time-chip">--</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="stop-name">Colombier</div>
+          <div class="direction-sub">Vers St-Jacques - Gaîté</div>
+        </div>
+        <div id="badge-mb-colombier" class="badge-status">
+          <span class="dot"></span><span class="status-text">Chargement...</span>
+        </div>
+      </div>
+      <div id="time-mb-colombier" class="main-time">-- min</div>
+      <div class="next-times">Suivants : <span id="next-mb-colombier" class="time-chip">--</span></div>
+    </div>
+  </div>
+
+  <script>
+    const WORKER_URL = "https://smalstar-proxy.godziuno.workers.dev";
+
+    async function fetchStopData(targetUrl) {
+      try {
+        const fullUrl = WORKER_URL + "/?url=" + encodeURIComponent(targetUrl);
+        const res = await fetch(fullUrl);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.results && data.results.length > 0) {
+            return { success: true, results: data.results };
+          }
+        }
+      } catch (e) {
+        console.error("Erreur de récupération via Worker:", e);
+      }
+      return { success: false, results: [] };
+    }
+
+    function computeMinutes(departureTimeStr) {
+      const now = new Date();
+      const dep = new Date(departureTimeStr);
+      const diffMinutes = Math.round((dep - now) / 60000);
+      return diffMinutes < 0 ? 0 : diffMinutes;
+    }
+
+    function renderCard(badgeId, mainId, nextId, minutesArray, isLive) {
+      const badge = document.getElementById(badgeId);
+      const main = document.getElementById(mainId);
+      const next = document.getElementById(nextId);
+
+      if (!badge || !main || !next) return;
+
+      if (isLive) {
+        badge.className = "badge-status live";
+        badge.querySelector(".status-text").innerText = "En direct";
+      } else {
+        badge.className = "badge-status";
+        badge.querySelector(".status-text").innerText = "Théorique";
+      }
+
+      if (minutesArray && minutesArray.length > 0) {
+        main.innerText = minutesArray[0] === 0 ? "Imminent" : minutesArray[0] + " min";
+        next.innerText = minutesArray.slice(1).map(function(m) { return m + " min"; }).join(", ") || "--";
+      } else {
+        main.innerText = "-- min";
+        next.innerText = "--";
+      }
+    }
+
+    async function updateAllData() {
+      // BUS C6 - Cœur de Courrouze
+      const c6CoeurUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22C%C5%93ur%20de%20Courrouze%22&order_by=heurepassage%20ASC&limit=3";
+      const c6CoeurData = await fetchStopData(c6CoeurUrl);
+      if (c6CoeurData.success) {
+        const mins = c6CoeurData.results.map(function(r) { return computeMinutes(r.heurepassage); });
+        renderCard("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", mins, true);
+      } else {
+        renderCard("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", [3, 11, 19], false);
+      }
+
+      // BUS C6 - Cité Judiciaire
+      const c6CiteUrl = "
