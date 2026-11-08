@@ -40,9 +40,6 @@
       padding: 8px 12px;
       border-radius: 8px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
     .section-title {
@@ -213,7 +210,7 @@
           }
         }
       } catch (e) {
-        console.error("Erreur de récupération:", e);
+        console.error("Erreur réseau:", e);
       }
       return { success: false, results: [] };
     }
@@ -242,7 +239,7 @@
 
       if (minutesArray && minutesArray.length > 0) {
         main.innerText = minutesArray[0] === 0 ? "Imminent" : minutesArray[0] + " min";
-        next.innerText = minutesArray.slice(1).map(function(m) { return m + " min"; }).join(", ") || "--";
+        next.innerText = minutesArray.slice(1).map(m => m + " min").join(", ") || "--";
       } else {
         main.innerText = "-- min";
         next.innerText = "--";
@@ -250,41 +247,41 @@
     }
 
     async function updateAllData() {
-      // BUS C6 - Cœur de Courrouze
-      const c6CoeurUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22C%C5%93ur%20de%20Courrouze%22&order_by=heurepassage%20ASC&limit=3";
+      // BUS C6 - Coeur de Courrouze
+      const c6CoeurUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne=\"C6\" AND nomarret=\"Cœur de Courrouze\"&order_by=heurepassage ASC&limit=3";
       const c6CoeurData = await fetchStopData(c6CoeurUrl);
       if (c6CoeurData.success) {
-        const mins = c6CoeurData.results.map(function(r) { return computeMinutes(r.heurepassage); });
+        const mins = c6CoeurData.results.map(r => computeMinutes(r.heurepassage));
         renderCard("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", mins, true);
       } else {
         renderCard("badge-c6-coeur", "time-c6-coeur", "next-c6-coeur", [3, 11, 19], false);
       }
 
       // BUS C6 - Cité Judiciaire
-      const c6CiteUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne%3D%22C6%22%20AND%20nomarret%3D%22Cit%C3%A9%20Judiciaire%22&order_by=heurepassage%20ASC&limit=3";
+      const c6CiteUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-bus-circulation-passages-tr/records?where=nomcourtligne=\"C6\" AND nomarret=\"Cité Judiciaire\"&order_by=heurepassage ASC&limit=3";
       const c6CiteData = await fetchStopData(c6CiteUrl);
       if (c6CiteData.success) {
-        const mins = c6CiteData.results.map(function(r) { return computeMinutes(r.heurepassage); });
+        const mins = c6CiteData.results.map(r => computeMinutes(r.heurepassage));
         renderCard("badge-c6-cite", "time-c6-cite", "next-c6-cite", mins, true);
       } else {
         renderCard("badge-c6-cite", "time-c6-cite", "next-c6-cite", [2, 9, 17], false);
       }
 
-      // MÉTRO B - La Courrouze
-      const mbCourrouzeUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation%3D%22La%20Courrouze%22&limit=3";
+      // METRO B - La Courrouze
+      const mbCourrouzeUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation=\"La Courrouze\"&limit=3";
       const mbCourrouzeData = await fetchStopData(mbCourrouzeUrl);
       if (mbCourrouzeData.success) {
-        const mins = mbCourrouzeData.results.map(function(r) { return computeMinutes(r.heurepassage); }).sort(function(a,b){ return a-b; });
+        const mins = mbCourrouzeData.results.map(r => computeMinutes(r.heurepassage)).sort((a,b)=>a-b);
         renderCard("badge-mb-courrouze", "time-mb-courrouze", "next-mb-courrouze", mins, true);
       } else {
         renderCard("badge-mb-courrouze", "time-mb-courrouze", "next-mb-courrouze", [2, 5, 8], false);
       }
 
-      // MÉTRO B - Colombier
-      const mbColombierUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation%3D%22Colombier%22&limit=3";
+      // METRO B - Colombier
+      const mbColombierUrl = "https://data.rennesmetropole.fr/api/explore/v2.1/catalog/datasets/tco-metro-circulation-deux-prochains-passages-tr/records?where=nomstation=\"Colombier\"&limit=3";
       const mbColombierData = await fetchStopData(mbColombierUrl);
       if (mbColombierData.success) {
-        const mins = mbColombierData.results.map(function(r) { return computeMinutes(r.heurepassage); }).sort(function(a,b){ return a-b; });
+        const mins = mbColombierData.results.map(r => computeMinutes(r.heurepassage)).sort((a,b)=>a-b);
         renderCard("badge-mb-colombier", "time-mb-colombier", "next-mb-colombier", mins, true);
       } else {
         renderCard("badge-mb-colombier", "time-mb-colombier", "next-mb-colombier", [1, 4, 7], false);
