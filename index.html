@@ -40,6 +40,9 @@
       padding: 8px 12px;
       border-radius: 8px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .section-title {
@@ -198,26 +201,11 @@
 
   <script>
     const WORKER_URL = "https://smalstar-proxy.godziuno.workers.dev";
-    const FALLBACK_PROXY = "https://api.allorigins.win/raw?url=";
-
-    async function fetchWithTimeout(url, timeout = 2500) {
-      const controller = new AbortController();
-      const id = setTimeout(function() { controller.abort(); }, timeout);
-      try {
-        const response = await fetch(url, { signal: controller.signal });
-        clearTimeout(id);
-        return response;
-      } catch (e) {
-        clearTimeout(id);
-        throw e;
-      }
-    }
 
     async function fetchStopData(targetUrl) {
-      // 1. Tentative via Cloudflare Worker
       try {
-        const workerFullUrl = WORKER_URL + "/?url=" + encodeURIComponent(targetUrl);
-        const res = await fetchWithTimeout(workerFullUrl, 2500);
+        const fullUrl = WORKER_URL + "/?url=" + encodeURIComponent(targetUrl);
+        const res = await fetch(fullUrl);
         if (res.ok) {
           const data = await res.json();
           if (data && data.results && data.results.length > 0) {
@@ -225,23 +213,8 @@
           }
         }
       } catch (e) {
-        console.warn("Échec du Worker, passage au proxy de secours...", e);
+        console.error("Erreur de récupération:", e);
       }
-
-      // 2. Tentative via le proxy de secours
-      try {
-        const fallbackUrl = FALLBACK_PROXY + encodeURIComponent(targetUrl);
-        const res = await fetchWithTimeout(fallbackUrl, 3000);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.results && data.results.length > 0) {
-            return { success: true, results: data.results };
-          }
-        }
-      } catch (e) {
-        console.error("Échec des requêtes de données:", e);
-      }
-
       return { success: false, results: [] };
     }
 
